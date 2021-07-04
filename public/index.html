@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Bucket</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+<div style="float:left; width:100%;">
+    <button class = menu onclick = "openNav()"><img src="icons/menu.svg"></button><span style="font-size: 1.8em;">Bucket</span>
+    
+</div>
+
+
+<div id="mySidenav" class = "sidenav">
+    <!--<button class="fill" data-jscolor="{closeButton: true, closeText:'Done!', onInput:'update(this)', preset:'large light', value:'rgba(44,175,254,0.8)'}" id="selector">
+        <img src="icons/format-color-fill.svg" ></button>-->
+    <button class = closebtn onclick="closeNav()"><img src ="icons/close.svg"></button>
+    
+    <div style="float:left" onclick="document.getElementById('foo').jscolor.show()" id="fillButton" class= "menubutton"><img src="icons/palette.svg" > Palette</div>
+    <div style="float:left" onclick="togglePaint()" class= "menubutton"><img src="icons/format-color-fill.svg"></img> Fill</div>
+    <div style="float:left" onclick="togglePicker()" class= "menubutton"><img src="icons/eyedropper.svg"></img> Picker</div>
+    <div style="float:left" onclick="toggleDraw()" class= "menubutton"><img src="icons/brush.svg"> Draw <input type="range" min="1" max="20" value="3" class="slider2" id="thickness1"></div>
+    <div style="float:left" onclick="toggleRubber()" class= "menubutton"><img src="icons/eraser.svg"> Eraser <input type="range" min="1" max="20" value="3" class="slider2" id="thickness2"></div>
+    <div style="float:left" onclick="undo()" class= "menubutton"><img src="icons/undo.svg"></img> Undo</div>
+    <div style="float:left" onclick="triggerInput()" class= "menubutton"><label for="upload"><img src = "icons/image-multiple-outline.svg"></label><input type="file" id = "upload" class ="filed"> Upload</div>
+    <div style="float:left" onclick="convertOptions()" class= "menubutton"><img src="icons/sync-circle.svg"> Convert</div>
+    <div style="float:left" onclick="download()" class= "menubutton"><img src="icons/download.svg"> Download</div>
+    
+
+</div>
+
+<p><input id="foo" hidden data-jscolor="{closeButton: true, closeText:'Done!', onInput:'update(this)', preset:'large light', value:'rgba(44,175,254,0.8)'}" value="cc4499">
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span onclick = "closeModal()" class="close">&times;</span>
+        <p>Converts the image into a stencil. Default values are recommended but may not always work best. Bluriness is inital Gaussian blur, Regions is roughly how many different features
+            are picked up by the edge detection, Gapiness how many open regions are present (turn this up to reduce region size) and Thickness is how thick the final stencil lines are.
+        </p>
+      
+      <div class="slidecontainer" >
+        <p>Bluriness: <span id="boxslider1">6</span></p>
+        <input type="range" min="1" max="20" value="6" class="slider" id="slider1">
+      </div>
+      <div class="slidecontainer" >
+        <p>Regions: <span id="boxslider2">4</span></p>
+        <input type="range" min="1" max="10" value="4" class="slider" id="slider2"> 
+      </div>
+      <div class="slidecontainer" >
+        <p>Gapiness: <span id="boxslider3">2</span></p>
+        <input type="range" min="1" max="10" value="2" class="slider" id="slider3">
+      </div>
+      <div class="slidecontainer" >
+        <p>Thickness: <span id="boxslider4">3</span></p>
+        <input type="range" min="1" max="10" value="3" class="slider" id="slider4">
+      </div>
+      <button onclick="convert()">Convert!</button>
+    </div>
+  
+  </div>
+<img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
+<div id = "container" style="height:100%; width:100%; left:5%; top:5%">
+    <canvas id="myCanvas"></canvas>
+</div>  
+<script src = "jscolor.js"></script>
+<script>
+    //PUT ALL TEXT INSIDE BUTTON, REMOVE DIVS, CHANGE CSS NAVBAR TO BUTTON CLASS ETC
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    var canvas = document.getElementById("myCanvas");
+        ctx = canvas.getContext("2d");
+        mode = "Fill"
+        fillColour = [255, 0, 0, 255]
+        fillButton = document.getElementById("fillButton")
+        undoStack = []
+        img = document.getElementById("turtle")
+        convertOptionsArray = [6,4,2,3]
+        clickX = new Array();
+        clickY = new Array();
+        clickDrag = new Array();
+        drawing = false;
+        penThickness = 4
+        eraserThickness = 4
+    
+
+    img.addEventListener("load", e=>{
+        let canvassss = document.getElementById("myCanvas")
+        let context = canvas.getContext("2d")
+        let tw = vw*0.9
+        let th = vh*0.9
+        //scale image to fit smallest dimension & remain proportionate
+        scaledData = scaleImage(tw, th, img.width, img.height)
+        sw = scaledData[0]
+        sh = scaledData[1]
+        context.canvas.width = sw
+        context.canvas.height = sh
+        context.clearRect(0,0, sw, sh)
+        context.drawImage(img, 0, 0, img.width, img.height, 0, 0, sw, sh) 
+    })
+
+    function scaleImage(canvasWidth, canvasHeight, imageWidth, imageHeight){
+        let scaledWidth = imageWidth
+        let scaledHeight = imageHeight
+        let scaled = 1
+        if (imageHeight > canvasHeight && imageWidth > canvasWidth){
+            scaled = Math.max(imageHeight/canvasHeight, imageWidth/canvasWidth)
+            scaledWidth = imageWidth/scaled
+            scaledHeight = imageHeight/scaled
+        }
+        else if (imageHeight < canvasHeight && imageWidth < canvasWidth){
+            scaled = Math.min(canvasHeight/imageHeight, canvasWidth/imageWidth)
+            scaledWidth = imageWidth*scaled
+            scaledHeight = imageHeight*scaled
+        }
+        else if (imageHeight < canvasHeight && imageWidth > canvasWidth){
+            scaled = imageWidth/canvasWidth
+            scaledWidth = imageWidth/scaled
+            scaledHeight = imageHeight/scaled
+        }
+        else if (imageHeight > canvasHeight && imageWidth < canvasWidth){
+            scaled = imageHeight/canvasHeight
+            scaledWidth = imageWidth/scaled
+            scaledHeight = imageHeight/scaled
+        }
+        console.log("CW, CH, IW, IH, S, SW, SH")
+        console.log(canvasWidth, canvasHeight, imageWidth, imageHeight, scaled, scaledWidth, scaledHeight)
+        return [scaledWidth, scaledHeight]
+    }
+
+     //+ canvas.clientLeft
+     //+ canvas.clientTop
+    canvas.addEventListener("click", function(event){
+        if (mode=="Draw" || mode=="Rubber"){
+            return 0
+        }
+        canLeft = canvas.offsetLeft
+        canTop = canvas.offsetTop
+        var x = (event.clientX - canLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
+            y = (event.clientY - canTop)*(canvas.height/canvas.offsetHeight)
+            c = document.getElementById("myCanvas")
+            ctx = c.getContext("2d")
+            imageData = ctx.getImageData(0,0, canvas.width, canvas.height)
+        returnedData = makeWorkerAndFill(imageData, canvas, ctx, Math.round(x), Math.round(y), fillColour, mode)  
+    })
+    press = function(e){ //mousedown
+        if (mode=="Draw" || mode=="Rubber"){
+            //var x = (event.clientX - canvas.offsetLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
+               // y = (event.clientY - canvas.offsetTop)*(canvas.height/canvas.offsetHeight)
+            var mouseX = ((e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft)*(canvas.width/canvas.offsetWidth)
+			    mouseY = ((e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop)*(canvas.height/canvas.offsetHeight)
+            drawing = true;
+            addClick(x,y);
+            redraw();}
+        else{
+            return 0
+        }
+    }
+    release = function(event){ //mouseup
+        if (mode=="Draw" || mode=="Rubber"){
+            drawing = false;
+            clickX = []
+            clickY = []
+        }
+        else{
+            return 0
+        }
+    }
+    cancel =  function(event){
+        if (mode=="Draw" || mode=="Rubber"){
+            drawing = false;
+            clickX = []
+            clickY = []}
+        else{
+            return 0
+        }
+    }
+    drag =  function(e){
+        if (drawing){
+            //var x = (event.clientX - canvas.offsetLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
+                //y = (event.clientY - canvas.offsetTop)*(canvas.height/canvas.offsetHeight)
+            var mouseX = ((e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft)*(canvas.width/canvas.offsetWidth)
+			    mouseY = ((e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop)*(canvas.height/canvas.offsetHeight)
+					
+            addClick(mouseX,mouseY);
+            redraw();}
+        else{
+            return 0
+        }
+        e.preventDefault();
+    }
+
+    // Add mouse event listeners to canvas element
+	canvas.addEventListener("mousedown", press, false);
+	canvas.addEventListener("mousemove", drag, false);
+	canvas.addEventListener("mouseup", release);
+	canvas.addEventListener("mouseout", cancel, false);
+
+	// Add touch event listeners to canvas element
+	canvas.addEventListener("touchstart", press, false);
+	canvas.addEventListener("touchmove", drag, false);
+	canvas.addEventListener("touchend", release, false);
+	canvas.addEventListener("touchcancel", cancel, false);
+
+    function addClick(x, y, dragging){
+        clickX.push(x);
+        clickY.push(y);
+        clickDrag.push(dragging);
+    }
+
+    function redraw(){
+        let context = canvas.getContext("2d")
+        //context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+        if (mode =="Rubber"){
+            context.strokeStyle = "white";
+            context.lineWidth = eraserThickness;
+        }
+        else{
+            context.strokeStyle = document.getElementById('foo').jscolor.toRGBAString();
+            context.lineWidth = penThickness;
+        }
+        
+        context.lineJoin = "round";
+        
+                    
+        for(var i=0; i < clickX.length; i++) {		
+            context.beginPath();
+            if(clickDrag[i] && i){
+            context.moveTo(clickX[i-1], clickY[i-1]);
+            }else{
+            context.moveTo(clickX[i]-1, clickY[i]);
+            }
+            context.lineTo(clickX[i], clickY[i]);
+            context.closePath();
+            context.stroke();
+        }
+    }
+
+    const inputElement = document.getElementById("upload");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+        let img = document.getElementById("turtle");
+        let fileList = this.files; /* now you can work with the file list */
+        let file = fileList[0]
+        if (file.size > 10000000){
+            return 0
+        }
+        if (!file.type.startsWith('image/')){ return 0 }
+        var reader = new FileReader();
+        reader.readAsDataURL(fileList[0]);
+        reader.onload = function () { //a promise so would will work on promise competion 
+            img.src = reader.result
+            //drawOnCanvas()
+        }  
+    } 
+
+    function drawOnCanvas(){
+        ctx.clearRect(0,0, canvas.width, canvas.height)
+        let img = document.getElementById("turtle");
+        img.setAttribute("crossorigin","Anonymous")
+        ctx.canvas.width = vw*0.9
+        ctx.canvas.height = vh*0.9
+        let imgHeight = img.height 
+        let imgWidth = img.width
+        if (imgHeight < vh*0.9 && imgWidth < vw*0.9){
+            ctx.drawImage(img, 0, 0, dWidth = imgWidth, dHeight = imgHeight)
+        }
+        else {
+            ctx.drawImage(img, 0, 0,  dWidth = vh*0.9 , dHeight = vh*0.9 )
+        }
+        //ctx.canvas.width = imgWidth
+        //ctx.canvas.height = imgHeight
+    }
+
+    function update(picker) {
+        fillColour = [parseInt(picker.channel("R")), parseInt(picker.channel("G")), parseInt(picker.channel("B")), parseInt(picker.channel("A")*255)]
+        fillButton.style.backgroundColor =  picker.toRGBAString()
+    }
+
+    function togglePicker(){
+        document.getElementById('foo').jscolor.fromRGBA(fillColour[0],fillColour[1],fillColour[2],fillColour[3]/255)
+        mode = "Picker"
+        doOutline(2)
+        return 0
+    }
+
+    function togglePaint(){
+        mode = "Fill"
+        doOutline(1)
+        return 0
+    }
+
+    function toggleDraw(){
+        mode = "Draw"
+        doOutline(3)
+        return 0
+    }
+
+    function toggleRubber(){
+        mode = "Rubber"
+        doOutline(4)
+        return 0
+    }
+
+    function triggerInput(){
+        document.getElementById("upload").click()
+        doOutline(6)
+    }
+
+    jscolor.trigger('input')
+
+    function undo(){
+        doOutline(5)
+        mode = "Undo"
+        if (undoStack.length > 0){
+            var undoAct = undoStack.pop()
+            mode = "Fill"
+        }
+        else{
+            mode="Fill"
+            return 0
+        }
+        c = document.getElementById("myCanvas")
+        ctx = c.getContext("2d")
+        imageData = ctx.getImageData(0,0, canvas.width, canvas.height) 
+        undoColour = undoAct[2]
+        makeWorkerAndFill(imageData, canvas, ctx, undoAct[0], undoAct[1], undoColour, mode)
+        return 0
+    }
+
+    function makeWorkerAndFill(imageData, canvas, ctx, x, y, funFillColour, funMode){
+        myWorker = new Worker("flood_fill.js") 
+
+        myWorker.postMessage([imageData, canvas.width, canvas.height, x, y, funFillColour, funMode])
+        myWorker.onmessage = function(e) {
+
+            result = e.data[1];
+            if (e.data[0] == "Fill"){
+                undoStack.push(e.data[2])
+                ctx.putImageData(result,0,0)
+            }
+            else if (e.data[0] == "Picked"){
+                fillColour = result
+                document.getElementById('foo').jscolor.fromRGBA(fillColour[0],fillColour[1],fillColour[2],fillColour[3]/255)
+                fillButton.style.backgroundColor =  document.getElementById('foo').jscolor.toRGBAString()
+                mode="Fill" //reset to fill
+                doOutline(1) //turn on fill button selected
+            }
+            else if (e.data[0] == "Undo"){
+                ctx.putImageData(result,0,0)
+            }
+            myWorker.terminate()
+        }
+        return ["Fill"]
+    }
+
+    document.querySelectorAll('.slider').forEach(item => {
+        item.oninput = function(){
+            let string = "box"+this.id
+            let output = document.getElementById(string)
+            output.innerHTML = this.value
+            let num = string.split("")[9] - 1
+            convertOptionsArray[num] = parseInt(this.value)
+        }
+        
+    })  
+    document.getElementById("thickness1").oninput = function(event){
+        penThickness =  document.getElementById("thickness1").value
+    }
+    document.getElementById("thickness2").onchange = function(event){
+        eraserThickness =  document.getElementById("thickness2").value
+    }
+
+
+    function doOutline(number){
+        let menuButtons = document.getElementsByClassName("menubutton")    //remove this as it breaks every onclick function
+        for (let i = 0, len = menuButtons.length; i<len; i = i+1){
+                menuButtons[i].style.backgroundColor = ""}
+            menuButtons[number].style.backgroundColor = "#e3e3e3"
+            fillButton.style.backgroundColor =  document.getElementById('foo').jscolor.toRGBAString()
+    }
+    
+    function closeModal(){
+        let modal = document.getElementById("myModal")
+        modal.style.display = "none";
+    }
+
+    function convertOptions(){
+        let modal = document.getElementById("myModal")
+        modal.style.display = "block"
+    }
+
+    function convert(){
+        let img = document.getElementById("turtle");
+        data = canvas.toDataURL("image/jpeg") //jpeg works on chrome and ff, bmp only on ff
+        let split = data.split(",")
+            base64 = split[1]
+        const http = new XMLHttpRequest()
+        const url = "https://europe-west1-bucket-12.cloudfunctions.net/function-1"
+        
+         //set this to get data back!!
+        http.open("POST", url, true)
+        http.setRequestHeader("Content-type", "application/json;charset=utf-8")
+
+        http.onreadystatechange= function(){ 
+            if (http.readyState !== 4) { return }
+            if (http.status !== 200) { return }
+            let returnData = ('data:image/bmp;base64,').concat(http.responseText)
+            img.src = returnData
+            closeModal()
+        }
+        http.send(JSON.stringify({"message":base64, "params":convertOptionsArray}))
+    }
+
+    function download(){
+        doOutline(8)
+        let img = document.getElementById("turtle");
+        var link = document.createElement('a');
+        link.download = 'bucket.png';
+        link.href = canvas.toDataURL("image/jpeg")
+        link.click()
+
+    }
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "200px";
+    }
+
+    function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    }
+      
+</script>
+</body>
+</html>
+
+
+
+
