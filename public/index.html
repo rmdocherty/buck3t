@@ -19,15 +19,19 @@
         <img src="icons/format-color-fill.svg" ></button>-->
     <button class = closebtn onclick="closeNav()"><img src ="icons/close.svg"></button>
     
-    <div style="float:left" onclick="document.getElementById('foo').jscolor.show()" id="fillButton" class= "menubutton"><img src="icons/palette.svg" > Palette</div>
-    <div style="float:left" onclick="togglePaint()" class= "menubutton"><img src="icons/format-color-fill.svg"></img> Fill</div>
-    <div style="float:left" onclick="togglePicker()" class= "menubutton"><img src="icons/eyedropper.svg"></img> Picker</div>
-    <div style="float:left" onclick="toggleDraw()" class= "menubutton"><img src="icons/brush.svg"> Draw <input type="range" min="1" max="20" value="3" class="slider2" id="thickness1"></div>
-    <div style="float:left" onclick="toggleRubber()" class= "menubutton"><img src="icons/eraser.svg"> Eraser <input type="range" min="1" max="20" value="3" class="slider2" id="thickness2"></div>
-    <div style="float:left" onclick="undo()" class= "menubutton"><img src="icons/undo.svg"></img> Undo</div>
-    <div style="float:left" onclick="triggerInput()" class= "menubutton"><label for="upload"><img src = "icons/image-multiple-outline.svg"></label><input type="file" id = "upload" class ="filed"> Upload</div>
-    <div style="float:left" onclick="convertOptions()" class= "menubutton"><img src="icons/sync-circle.svg"> Convert</div>
-    <div style="float:left" onclick="download()" class= "menubutton"><img src="icons/download.svg"> Download</div>
+    <div onclick="document.getElementById('foo').jscolor.show()" id="fillButton" class= "menubutton"><img src="icons/palette.svg" ></div>
+    <div onclick="togglePaint()" class= "menubutton"><img src="icons/format-color-fill.svg"></img></div>
+    <div onclick="togglePicker()" class= "menubutton"><img src="icons/eyedropper.svg"></img></div>
+    <div onclick="toggleDraw()" class= "menubutton"><img src="icons/brush.svg">
+        <input type="range" min="1" max="20" value="3" class="slider2" id="thickness1">
+    </div>
+    <div onclick="toggleRubber()" class= "menubutton"><img src="icons/eraser.svg">
+        <input type="range" min="1" max="20" value="3" class="slider2" id="thickness2">
+    </div>
+    <div onclick="undo()" class= "menubutton"><img src="icons/undo.svg"></img></div>
+    <div onclick="triggerInput()" class= "menubutton"><label for="upload"><img src = "icons/image-multiple-outline.svg"></label><input type="file" id = "upload" class ="filed"></div>
+    <div onclick="convertOptions()" class= "menubutton"><img src="icons/sync-circle.svg"></div>
+    <div onclick="download()" class= "menubutton"><img src="icons/download.svg"></div>
     
 
 </div>
@@ -294,6 +298,13 @@
     }
 
     function toggleDraw(){
+        let slider = document.getElementById("thickness1")
+        if (slider.style.display === "none") {
+            slider.style.display = "inline";
+        }
+        else {
+            slider.style.display = "none";
+        }
         mode = "Draw"
         doOutline(3)
         return 0
@@ -302,6 +313,13 @@
     function toggleRubber(){
         mode = "Rubber"
         doOutline(4)
+        let slider = document.getElementById("thickness2")
+        if (slider.style.display === "none") {
+            slider.style.display = "inline";
+        }
+        else {
+            slider.style.display = "none";
+        }
         return 0
     }
 
@@ -365,7 +383,6 @@
             let num = string.split("")[9] - 1
             convertOptionsArray[num] = parseInt(this.value)
         }
-        
     })  
     document.getElementById("thickness1").oninput = function(event){
         penThickness =  document.getElementById("thickness1").value
@@ -425,11 +442,15 @@
 
     }
     function openNav() {
-        document.getElementById("mySidenav").style.width = "200px";
+        document.getElementById("mySidenav").style.width = "65px";
     }
 
     function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
+        let slider1 = document.getElementById("thickness1")
+        slider1.style.display = "none"
+        let slider2 = document.getElementById("thickness2")
+        slider2.style.display = "none"
+        document.getElementById("mySidenav").style.width = "0";
     }
       
 </script>
