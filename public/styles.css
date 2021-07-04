@@ -16,7 +16,11 @@ body {
   .menu:active{
     outline:  #575259;
   }
-   /* The Modal (background) */
+
+/*=======================
+     MODAL STUFF
+=======================*/
+
    .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -54,6 +58,10 @@ body {
     cursor: pointer;
   } 
 
+/*=======================
+     SLIDERS STUFF
+=======================*/
+
   .slidecontainer {
     width: 100%;
   }
@@ -85,6 +93,8 @@ body {
     height: 25px;
     background: #575259;
     cursor: pointer;
+    border-radius: 50%;
+    background: #1ebdf7;
   }
   
   .slider::-moz-range-thumb {
@@ -92,7 +102,32 @@ body {
     height: 25px;
     background:  #575259;
     cursor: pointer;
+    border-radius: 50%;
+    background: #1ebdf7;
   }
+
+  .convertBtn {
+    padding: 1% 1% 1% 1%;
+    font-size: 22px;
+    background-color: #1ebdf7;
+    color: whitesmoke;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+    border: none;
+    border-radius: 10%;
+    opacity: 0.7;
+  }
+  
+  .convertBtn:hover {
+    opacity: 1;
+  }
+
+/*=======================
+     SIDENAV STUFF
+=======================*/
 
   .sidenav {
     height: 100%;
@@ -128,18 +163,14 @@ body {
   }
   
   .sidenav .closebtn {
-    /*position: absolute;
-    top: 6px;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px; */
     background-color: transparent;
     border: none; 
-    /*
-    padding-top: 0.25%;
-    border-radius: 4px; */
     padding: 16% 16% 16% 32%;
   }
+
+/*=======================
+     POPUP STUFF
+=======================*/
   
   @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
@@ -201,3 +232,4 @@ body {
     from {opacity: 0;}
     to {opacity:1 ;}
   }
+

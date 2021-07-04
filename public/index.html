@@ -5,74 +5,100 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="styles.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+<style>
+body {
+    font-family: 'Roboto'; font-size: 1em;
+}
+</style>
 </head>
 <body>
 
 <div style="float:left; width:100%;">
     <button class = menu onclick = "openNav()"><img src="icons/menu.svg"></button><span style="font-size: 1.8em;">Bucket</span>
-    
 </div>
-
 
 <div id="mySidenav" class = "sidenav">
-    <!--<button class="fill" data-jscolor="{closeButton: true, closeText:'Done!', onInput:'update(this)', preset:'large light', value:'rgba(44,175,254,0.8)'}" id="selector">
-        <img src="icons/format-color-fill.svg" ></button>-->
-    <button class = closebtn onclick="closeNav()"><img src ="icons/close.svg"></button>
-    
-    <div onclick="document.getElementById('foo').jscolor.show()" id="fillButton" class= "menubutton"><img src="icons/palette.svg" ></div>
-    <div onclick="togglePaint()" class= "menubutton"><img src="icons/format-color-fill.svg"></img></div>
-    <div onclick="togglePicker()" class= "menubutton"><img src="icons/eyedropper.svg"></img></div>
-    <div onclick="toggleDraw()" class= "menubutton"><img src="icons/brush.svg">
+    <!--Basically the sidebar that contains all the buttons to press-->
+    <button class = closebtn onclick="closeNav()">
+        <img src ="icons/close.svg">
+    </button>
+    <div onclick="document.getElementById('foo').jscolor.show()" id="fillButton" class= "menubutton">
+        <img src="icons/palette.svg" >
+    </div>
+    <div onclick="togglePaint()" class="menubutton">
+        <img src="icons/format-color-fill.svg"></img>
+    </div>
+    <div onclick="togglePicker()" class="menubutton">
+        <img src="icons/eyedropper.svg"></img>
+    </div>
+    <div onclick="toggleDraw()" class="menubutton">
+        <img src="icons/brush.svg">
         <input type="range" min="1" max="20" value="3" class="slider2" id="thickness1">
     </div>
-    <div onclick="toggleRubber()" class= "menubutton"><img src="icons/eraser.svg">
-        <input type="range" min="1" max="20" value="3" class="slider2" id="thickness2">
+    <div onclick="undo()" class="menubutton">
+        <img src="icons/undo.svg"></img>
     </div>
-    <div onclick="undo()" class= "menubutton"><img src="icons/undo.svg"></img></div>
-    <div onclick="triggerInput()" class= "menubutton"><label for="upload"><img src = "icons/image-multiple-outline.svg"></label><input type="file" id = "upload" class ="filed"></div>
-    <div onclick="convertOptions()" class= "menubutton"><img src="icons/sync-circle.svg"></div>
-    <div onclick="download()" class= "menubutton"><img src="icons/download.svg"></div>
-    
-
+    <div onclick="triggerInput()" class="menubutton">
+        <label for="upload">
+            <img src = "icons/image-multiple-outline.svg">
+        </label>
+        <input type="file" id = "upload" class ="filed">
+    </div>
+    <div onclick="convertOptions()" class="menubutton">
+        <img src="icons/sync-circle.svg">
+    </div>
+    <div onclick="download()" class="menubutton">
+        <img src="icons/download.svg">
+    </div>
+    <div onclick="showHelp()" class="menubutton">
+        <img src="icons/information-outline.svg">
+    </div>
 </div>
 
+<!--From the jscolor examples page-->
 <p><input id="foo" hidden data-jscolor="{closeButton: true, closeText:'Done!', onInput:'update(this)', preset:'large light', value:'rgba(44,175,254,0.8)'}" value="cc4499">
-<div id="myModal" class="modal">
 
+
+<!--Converts the image into a stencil. Default values are recommended but may not always work best. Bluriness is inital Gaussian blur, Regions is roughly how many different features
+            are picked up by the edge detection, Gapiness how many open regions are present (turn this up to reduce region size) and Thickness is how thick the final stencil lines are.-->
+
+<div id="myModal" class="modal">
     <!-- Modal content -->
     <div class="modal-content">
         <span onclick = "closeModal()" class="close">&times;</span>
-        <p>Converts the image into a stencil. Default values are recommended but may not always work best. Bluriness is inital Gaussian blur, Regions is roughly how many different features
-            are picked up by the edge detection, Gapiness how many open regions are present (turn this up to reduce region size) and Thickness is how thick the final stencil lines are.
+        <p>
         </p>
-      
       <div class="slidecontainer" >
-        <p>Bluriness: <span id="boxslider1">6</span></p>
+        <p><b>Blur: </b><span id="boxslider1">6</span></p>
         <input type="range" min="1" max="20" value="6" class="slider" id="slider1">
       </div>
       <div class="slidecontainer" >
-        <p>Regions: <span id="boxslider2">4</span></p>
+        <p><b>Regions: </b><span id="boxslider2">4</span></p>
         <input type="range" min="1" max="10" value="4" class="slider" id="slider2"> 
       </div>
       <div class="slidecontainer" >
-        <p>Gapiness: <span id="boxslider3">2</span></p>
+        <p><b>Gaps: </b><span id="boxslider3">2</span></p>
         <input type="range" min="1" max="10" value="2" class="slider" id="slider3">
       </div>
       <div class="slidecontainer" >
-        <p>Thickness: <span id="boxslider4">3</span></p>
+        <p><b>Line Thickness: </b><span id="boxslider4">3</span></p>
         <input type="range" min="1" max="10" value="3" class="slider" id="slider4">
       </div>
-      <button onclick="convert()">Convert!</button>
+      <button onclick="convert()" class="convertBtn">Convert!</button>
     </div>
-  
-  </div>
+</div>
+
+<!--Placeholder image and canvas objects-->
 <img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
 <div id = "container" style="height:100%; width:100%; left:5%; top:5%">
     <canvas id="myCanvas"></canvas>
-</div>  
+</div> 
+<!--Import Js color for the pickers-->
 <script src = "jscolor.js"></script>
+
 <script>
-    //PUT ALL TEXT INSIDE BUTTON, REMOVE DIVS, CHANGE CSS NAVBAR TO BUTTON CLASS ETC
+    //Define some global variables
     const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
     const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     var canvas = document.getElementById("myCanvas");
@@ -90,7 +116,7 @@
         penThickness = 4
         eraserThickness = 4
     
-
+    //event that happens when image loaded when uploaded
     img.addEventListener("load", e=>{
         let canvassss = document.getElementById("myCanvas")
         let context = canvas.getContext("2d")
@@ -106,6 +132,7 @@
         context.drawImage(img, 0, 0, img.width, img.height, 0, 0, sw, sh) 
     })
 
+    //get s.f by finding longest side of image relative to viewport, scale image by that s.f
     function scaleImage(canvasWidth, canvasHeight, imageWidth, imageHeight){
         let scaledWidth = imageWidth
         let scaledHeight = imageHeight
@@ -135,8 +162,7 @@
         return [scaledWidth, scaledHeight]
     }
 
-     //+ canvas.clientLeft
-     //+ canvas.clientTop
+    //Handler for click events that changes depending on mode
     canvas.addEventListener("click", function(event){
         if (mode=="Draw" || mode=="Rubber"){
             return 0
@@ -150,6 +176,7 @@
             imageData = ctx.getImageData(0,0, canvas.width, canvas.height)
         returnedData = makeWorkerAndFill(imageData, canvas, ctx, Math.round(x), Math.round(y), fillColour, mode)  
     })
+    //Functions for drawing using pen
     press = function(e){ //mousedown
         if (mode=="Draw" || mode=="Rubber"){
             //var x = (event.clientX - canvas.offsetLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
@@ -188,10 +215,9 @@
                 //y = (event.clientY - canvas.offsetTop)*(canvas.height/canvas.offsetHeight)
             var mouseX = ((e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft)*(canvas.width/canvas.offsetWidth)
 			    mouseY = ((e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop)*(canvas.height/canvas.offsetHeight)
-					
             addClick(mouseX,mouseY);
             redraw();}
-        else{
+        else {
             return 0
         }
         e.preventDefault();
@@ -209,6 +235,7 @@
 	canvas.addEventListener("touchend", release, false);
 	canvas.addEventListener("touchcancel", cancel, false);
 
+    //yet more pen drawing functions
     function addClick(x, y, dragging){
         clickX.push(x);
         clickY.push(y);
@@ -226,10 +253,7 @@
             context.strokeStyle = document.getElementById('foo').jscolor.toRGBAString();
             context.lineWidth = penThickness;
         }
-        
-        context.lineJoin = "round";
-        
-                    
+        context.lineJoin = "round";            
         for(var i=0; i < clickX.length; i++) {		
             context.beginPath();
             if(clickDrag[i] && i){
@@ -243,6 +267,7 @@
         }
     }
 
+    //handle file uploads
     const inputElement = document.getElementById("upload");
     inputElement.addEventListener("change", handleFiles, false);
     function handleFiles() {
@@ -257,33 +282,16 @@
         reader.readAsDataURL(fileList[0]);
         reader.onload = function () { //a promise so would will work on promise competion 
             img.src = reader.result
-            //drawOnCanvas()
         }  
     } 
 
-    function drawOnCanvas(){
-        ctx.clearRect(0,0, canvas.width, canvas.height)
-        let img = document.getElementById("turtle");
-        img.setAttribute("crossorigin","Anonymous")
-        ctx.canvas.width = vw*0.9
-        ctx.canvas.height = vh*0.9
-        let imgHeight = img.height 
-        let imgWidth = img.width
-        if (imgHeight < vh*0.9 && imgWidth < vw*0.9){
-            ctx.drawImage(img, 0, 0, dWidth = imgWidth, dHeight = imgHeight)
-        }
-        else {
-            ctx.drawImage(img, 0, 0,  dWidth = vh*0.9 , dHeight = vh*0.9 )
-        }
-        //ctx.canvas.width = imgWidth
-        //ctx.canvas.height = imgHeight
-    }
-
+    //when picker changed update colour and change the palette button colour
     function update(picker) {
         fillColour = [parseInt(picker.channel("R")), parseInt(picker.channel("G")), parseInt(picker.channel("B")), parseInt(picker.channel("A")*255)]
         fillButton.style.backgroundColor =  picker.toRGBAString()
     }
 
+    //show/hide picker
     function togglePicker(){
         document.getElementById('foo').jscolor.fromRGBA(fillColour[0],fillColour[1],fillColour[2],fillColour[3]/255)
         mode = "Picker"
@@ -297,6 +305,7 @@
         return 0
     }
 
+    //show/hide the pen thickness slider
     function toggleDraw(){
         let slider = document.getElementById("thickness1")
         if (slider.style.display === "none") {
@@ -310,26 +319,16 @@
         return 0
     }
 
-    function toggleRubber(){
-        mode = "Rubber"
-        doOutline(4)
-        let slider = document.getElementById("thickness2")
-        if (slider.style.display === "none") {
-            slider.style.display = "inline";
-        }
-        else {
-            slider.style.display = "none";
-        }
-        return 0
-    }
-
+    //kinda janky-this simulates click on upload element so the upload is tied to a button 
     function triggerInput(){
         document.getElementById("upload").click()
         doOutline(6)
     }
 
+    //honestly no idea what this does
     jscolor.trigger('input')
 
+    //undo last paint action by filling the reverse of what was just done
     function undo(){
         doOutline(5)
         mode = "Undo"
@@ -349,6 +348,11 @@
         return 0
     }
 
+    /*
+    Flood fill by creating a new 'worker' i.e process that runs in different window and runs the flood fill
+    found in flood_fill.js. Done this way to avoid really long wait times/periods of uninteractibility whilst
+    fill takes place - and seems to work
+    */
     function makeWorkerAndFill(imageData, canvas, ctx, x, y, funFillColour, funMode){
         myWorker = new Worker("flood_fill.js") 
 
@@ -375,6 +379,7 @@
         return ["Fill"]
     }
 
+    //dodgy slider update code for when the modal sliders are used - basically mapping each slider to an entry in array
     document.querySelectorAll('.slider').forEach(item => {
         item.oninput = function(){
             let string = "box"+this.id
@@ -384,14 +389,13 @@
             convertOptionsArray[num] = parseInt(this.value)
         }
     })  
+
+    //slider code for pen slider which is diff. to modal slider
     document.getElementById("thickness1").oninput = function(event){
         penThickness =  document.getElementById("thickness1").value
     }
-    document.getElementById("thickness2").onchange = function(event){
-        eraserThickness =  document.getElementById("thickness2").value
-    }
 
-
+    //outline the last button pressed (and preserve palette button colour)
     function doOutline(number){
         let menuButtons = document.getElementsByClassName("menubutton")    //remove this as it breaks every onclick function
         for (let i = 0, len = menuButtons.length; i<len; i = i+1){
@@ -410,6 +414,10 @@
         modal.style.display = "block"
     }
 
+    /* 
+    Big bad boy function - take the image on the canvas, convert it into JPEG (for cross platform) then make request to 
+    the cloud function and send the data. Then launch an async wait for the respose and set the img object to the returned data 
+    */
     function convert(){
         let img = document.getElementById("turtle");
         data = canvas.toDataURL("image/jpeg") //jpeg works on chrome and ff, bmp only on ff
@@ -417,11 +425,8 @@
             base64 = split[1]
         const http = new XMLHttpRequest()
         const url = "https://europe-west1-bucket-12.cloudfunctions.net/function-1"
-        
-         //set this to get data back!!
         http.open("POST", url, true)
         http.setRequestHeader("Content-type", "application/json;charset=utf-8")
-
         http.onreadystatechange= function(){ 
             if (http.readyState !== 4) { return }
             if (http.status !== 200) { return }
@@ -437,10 +442,11 @@
         let img = document.getElementById("turtle");
         var link = document.createElement('a');
         link.download = 'bucket.png';
-        link.href = canvas.toDataURL("image/jpeg")
+        link.href = canvas.toDataURL("image/png") //used to be jpeg but alpha messes up?
         link.click()
-
     }
+
+    //two functions to open/close the nav bar. 65px chosen as it looks best on mobile & pc relative to icon size
     function openNav() {
         document.getElementById("mySidenav").style.width = "65px";
     }
@@ -448,8 +454,7 @@
     function closeNav() {
         let slider1 = document.getElementById("thickness1")
         slider1.style.display = "none"
-        let slider2 = document.getElementById("thickness2")
-        slider2.style.display = "none"
+        //setting width to 0 means doesn't shpw
         document.getElementById("mySidenav").style.width = "0";
     }
       
