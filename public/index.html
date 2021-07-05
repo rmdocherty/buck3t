@@ -3,7 +3,7 @@
 <head>
 <title>Bucket</title>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!--Add stylesheet, the favicon and robot font-->
 <link rel="stylesheet" type="text/css" href="styles.css">
 <link rel=icon href=icons/favicon.png>
@@ -117,6 +117,10 @@ body {
         drawing = false;
         penThickness = 4
         eraserThickness = 4
+
+        scrollX = 0 //variables for scroll
+        scrollY = 0
+        zoom = 1
     
     //event that happens when image loaded when uploaded
     img.addEventListener("load", e=>{
@@ -159,10 +163,22 @@ body {
             scaledWidth = imageWidth/scaled
             scaledHeight = imageHeight/scaled
         }
-        console.log("CW, CH, IW, IH, S, SW, SH")
-        console.log(canvasWidth, canvasHeight, imageWidth, imageHeight, scaled, scaledWidth, scaledHeight)
+        //console.log("CW, CH, IW, IH, S, SW, SH")
+        //console.log(canvasWidth, canvasHeight, imageWidth, imageHeight, scaled, scaledWidth, scaledHeight)
         return [scaledWidth, scaledHeight]
     }
+
+    window.addEventListener("resize", getSizes, false);
+    function getSizes() {
+        let body = document.documentElement;
+        zoom = vw/body.clientWidth //+ "px x " + body.clientHeight + "px";
+        console.log("zoom: ", zoom);
+    }
+
+    document.addEventListener('scroll', function(e){
+        scrollX = document.documentElement.scrollLeft
+        scrollY = document.documentElement.scrollTop
+    })
 
     //Handler for click events that changes depending on mode
     canvas.addEventListener("click", function(event){
@@ -171,11 +187,15 @@ body {
         }
         canLeft = canvas.offsetLeft
         canTop = canvas.offsetTop
-        var x = (event.clientX - canLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
-            y = (event.clientY - canTop)*(canvas.height/canvas.offsetHeight)
+        var x = (event.clientX - canLeft)*(canvas.width/canvas.offsetWidth) 
+            y = (event.clientY - canTop)*(canvas.height/canvas.offsetHeight) 
+            x = x + scrollX
+            y = y + scrollY
             c = document.getElementById("myCanvas")
             ctx = c.getContext("2d")
             imageData = ctx.getImageData(0,0, canvas.width, canvas.height)
+        //console.log("CanvasL, CanvasT, x, y")
+        console.log("click x: ", x, "click y: ", y)
         returnedData = makeWorkerAndFill(imageData, canvas, ctx, Math.round(x), Math.round(y), fillColour, mode)  
     })
     //Functions for drawing using pen
