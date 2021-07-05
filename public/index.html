@@ -4,7 +4,9 @@
 <title>Bucket</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Add stylesheet, the favicon and robot font-->
 <link rel="stylesheet" type="text/css" href="styles.css">
+<link rel=icon href=icons/favicon.png>
 <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 <style>
 body {
@@ -317,12 +319,6 @@ body {
         mode = "Draw"
         doOutline(3)
         return 0
-    }
-
-    //kinda janky-this simulates click on upload element so the upload is tied to a button 
-    function triggerInput(){
-        document.getElementById("upload").click()
-        doOutline(6)
     }
 
     //honestly no idea what this does
