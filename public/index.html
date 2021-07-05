@@ -16,8 +16,12 @@ body {
 </head>
 <body>
 
-<div style="float:left; width:100%;">
-    <button class = menu onclick = "openNav()"><img src="icons/menu.svg"></button><span style="font-size: 1.8em;">Bucket</span>
+<div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
+    <button class="menu" onclick = "openNav()"><img src="icons/menu.svg"></button>
+    <span style="font-size: 1.8em;">Bucket</span>
+    <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
+    <button class="menu" style="float:right"><img src="icons/folder.svg"></img></button>
+    <button class="menu" style="float:right"><img src="icons/account.svg"></img></button>
 </div>
 
 <div id="mySidenav" class = "sidenav">
@@ -69,8 +73,7 @@ body {
     <!-- Modal content -->
     <div class="modal-content">
         <span onclick = "closeModal()" class="close">&times;</span>
-        <p>
-        </p>
+        <p></p>
       <div class="slidecontainer" >
         <p><b>Blur: </b><span id="boxslider1">6</span></p>
         <input type="range" min="1" max="20" value="6" class="slider" id="slider1">
@@ -88,6 +91,24 @@ body {
         <input type="range" min="1" max="10" value="3" class="slider" id="slider4">
       </div>
       <button onclick="convert()" class="convertBtn">Convert!</button>
+    </div>
+</div>
+
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <span onclick = "closeHelp()" class="close">&times;</span>
+        <p></p>
+        <table width=90% padding=auto>
+            <tr>
+                <th>
+                    <img src="icons/palette.svg" >
+                </th>
+                <th></th>
+            </tr>
+            
+
+
+        </table>
     </div>
 </div>
 
@@ -120,7 +141,6 @@ body {
 
         scrollX = 0 //variables for scroll
         scrollY = 0
-        zoom = 1
     
     //event that happens when image loaded when uploaded
     img.addEventListener("load", e=>{
@@ -166,13 +186,6 @@ body {
         //console.log("CW, CH, IW, IH, S, SW, SH")
         //console.log(canvasWidth, canvasHeight, imageWidth, imageHeight, scaled, scaledWidth, scaledHeight)
         return [scaledWidth, scaledHeight]
-    }
-
-    window.addEventListener("resize", getSizes, false);
-    function getSizes() {
-        let body = document.documentElement;
-        zoom = vw/body.clientWidth //+ "px x " + body.clientHeight + "px";
-        console.log("zoom: ", zoom);
     }
 
     document.addEventListener('scroll', function(e){
@@ -296,7 +309,7 @@ body {
         let img = document.getElementById("turtle");
         let fileList = this.files; /* now you can work with the file list */
         let file = fileList[0]
-        if (file.size > 10000000){
+        if (file.size > 100000){
             return 0
         }
         if (!file.type.startsWith('image/')){ return 0 }
@@ -428,6 +441,16 @@ body {
     function convertOptions(){
         let modal = document.getElementById("myModal")
         modal.style.display = "block"
+    }
+
+    function showHelp(){
+        let modal = document.getElementById("helpModal")
+        modal.style.display = "block"
+    }
+
+    function closeHelp(){
+        let modal = document.getElementById("helpModal")
+        modal.style.display = "none"
     }
 
     /* 
