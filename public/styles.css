@@ -58,6 +58,34 @@ body {
     cursor: pointer;
   } 
 
+  .mdiv {
+    float: right;
+  }
+
+  .mbutton {
+    background-color: #fefefe;
+    font-size: 18px;
+    border: none;
+  }
+
+  .mbutton:hover {
+    background-color: #e3e3e3;
+    font-size: 18px;
+    border: none;
+  }
+
+  .hPage {
+    display: none
+  }
+
+  .hPage2 {
+    display: none
+  }
+
+  .hPage3 {
+    display: none
+  }
+
 /*=======================
      SLIDERS STUFF
 =======================*/

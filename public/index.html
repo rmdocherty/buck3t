@@ -16,13 +16,7 @@ body {
 </head>
 <body>
 
-<div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
-    <button class="menu" onclick = "openNav()"><img src="icons/menu.svg"></button>
-    <span style="font-size: 1.8em;">Bucket</span>
-    <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
-    <button class="menu" style="float:right"><img src="icons/folder.svg"></img></button>
-    <button class="menu" style="float:right"><img src="icons/account.svg"></img></button>
-</div>
+
 
 <div id="mySidenav" class = "sidenav">
     <!--Basically the sidebar that contains all the buttons to press-->
@@ -97,26 +91,102 @@ body {
 <div id="helpModal" class="modal">
     <div class="modal-content">
         <span onclick = "closeHelp()" class="close">&times;</span>
-        <p></p>
-        <table width=90% padding=auto>
-            <tr>
-                <th>
-                    <img src="icons/palette.svg" >
-                </th>
-                <th></th>
-            </tr>
-            
+        <p></p><p></p>
+        <div class="hpage" id="hPage1">
+            <p>Bucket is a web app for creating black and white 'templates' from images and filling them with colour - effectively a create your own paint-by-numbers.
+                The editor options are explained here, the conversion options on page 2 and sharing 
+                options on page 3.</p>
+            <table width=90% padding="auto">
+                <tr>
+                    <th>
+                        <img src="icons/palette.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Choose the colour for Fill and Draw options</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/format-color-fill.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Fill selected region with given colour</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/brush.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Draw with given colour - press again for slider to change brush thickness</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/undo.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Undo last Fill action</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/image-multiple-outline.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Choose image to upload</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/sync-circle.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Convert the image to a black and white 'template' to be filled in</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/download.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Download the current image</p>
+                    </th>
+                </tr>
+            </table>
+        </div>
 
+        <div class="hpage" id="hPage2" style="display: none">
+            <p> page 2</p>
+        </div>
+        
+        <div class="hpage" id="hPage3" style="display: none">
+            <p> page 3</p>
+        </div>
 
-        </table>
+        <div class="mdiv">
+            <button class="mbutton" onclick="showPage(1)">1</button>
+            <button class="mbutton" onclick="showPage(2)">2</button>
+            <button class="mbutton" onclick="showPage(3)">3</button>
+        </div>
     </div>
 </div>
 
 <!--Placeholder image and canvas objects-->
-<img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
-<div id = "container" style="height:100%; width:100%; left:5%; top:5%">
-    <canvas id="myCanvas"></canvas>
-</div> 
+<div>
+    <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
+        <button class="menu" onclick = "openNav()"><img src="icons/menu.svg"></button>
+        <span style="font-size: 1.8em;">Bucket</span>
+        <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
+        <button class="menu" style="float:right"><img src="icons/folder.svg"></img></button>
+        <button class="menu" style="float:right"><img src="icons/account.svg"></img></button>
+    </div>
+    <img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
+    <div id = "container" style="height:100%; width:100%;  padding-top: 5%;">
+        <canvas id="myCanvas"></canvas>
+    </div> 
+</div>
+
 <!--Import Js color for the pickers-->
 <script src = "jscolor.js"></script>
 
@@ -495,6 +565,15 @@ body {
         slider1.style.display = "none"
         //setting width to 0 means doesn't shpw
         document.getElementById("mySidenav").style.width = "0";
+    }
+
+    function showPage(w) {
+        let pages = document.getElementsByClassName("hpage")
+        console.log(w, pages)
+        for (let i = 0, len = pages.length; i<len; i = i+1){
+            pages[i].style.display = "none"
+        }
+        pages[w-1].style.display = "block"
     }
       
 </script>
