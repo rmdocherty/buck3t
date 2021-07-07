@@ -272,7 +272,7 @@ body {
 
     //Handler for click events that changes depending on mode
     canvas.addEventListener("click", function(event){
-        if (mode=="Draw" || mode=="Rubber"){
+        if (mode=="Draw"){
             return 0
         }
         canLeft = canvas.offsetLeft
@@ -290,9 +290,7 @@ body {
     })
     //Functions for drawing using pen
     press = function(e){ //mousedown
-        if (mode=="Draw" || mode=="Rubber"){
-            //var x = (event.clientX - canvas.offsetLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
-               // y = (event.clientY - canvas.offsetTop)*(canvas.height/canvas.offsetHeight)
+        if (mode=="Draw"){
             var mouseX = ((e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft)*(canvas.width/canvas.offsetWidth)
 			    mouseY = ((e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop)*(canvas.height/canvas.offsetHeight)
             drawing = true;
@@ -303,7 +301,7 @@ body {
         }
     }
     release = function(event){ //mouseup
-        if (mode=="Draw" || mode=="Rubber"){
+        if (mode=="Draw"){
             drawing = false;
             clickX = []
             clickY = []
@@ -313,7 +311,7 @@ body {
         }
     }
     cancel =  function(event){
-        if (mode=="Draw" || mode=="Rubber"){
+        if (mode=="Draw"){
             drawing = false;
             clickX = []
             clickY = []}
@@ -323,8 +321,6 @@ body {
     }
     drag =  function(e){
         if (drawing){
-            //var x = (event.clientX - canvas.offsetLeft)*(canvas.width/canvas.offsetWidth) //- (canLeft )
-                //y = (event.clientY - canvas.offsetTop)*(canvas.height/canvas.offsetHeight)
             var mouseX = ((e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft)*(canvas.width/canvas.offsetWidth)
 			    mouseY = ((e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop)*(canvas.height/canvas.offsetHeight)
             addClick(mouseX,mouseY);
@@ -356,15 +352,8 @@ body {
 
     function redraw(){
         let context = canvas.getContext("2d")
-        //context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
-        if (mode =="Rubber"){
-            context.strokeStyle = "white";
-            context.lineWidth = eraserThickness;
-        }
-        else{
-            context.strokeStyle = document.getElementById('foo').jscolor.toRGBAString();
-            context.lineWidth = penThickness;
-        }
+        context.strokeStyle = document.getElementById('foo').jscolor.toRGBAString();
+        context.lineWidth = penThickness;
         context.lineJoin = "round";            
         for(var i=0; i < clickX.length; i++) {		
             context.beginPath();
@@ -386,7 +375,7 @@ body {
         let img = document.getElementById("turtle");
         let fileList = this.files; /* now you can work with the file list */
         let file = fileList[0]
-        if (file.size > 10000000){
+        if (file.size > 10000000){ //10MB limit
             return 0
         }
         if (!file.type.startsWith('image/')){ return 0 }
