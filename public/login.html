@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+  </head>
+    <!-- This only works when deployed lol-->
+    <h1> </h1>
+    <body>
+      <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+      <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+      <script src="/__/firebase/8.7.0/firebase-app.js"></script>
+      <!-- Add Firebase products that you want to use -->
+      <script src="/__/firebase/8.7.0/firebase-auth.js"></script>
+      <script src="/__/firebase/8.7.0/firebase-firestore.js"></script>
+      <script src="/__/firebase/init.js"></script>
+      
+      <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+      <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+      <script>
+        // Initialize the FirebaseUI Widget using Firebase.
+        var ui = new firebaseui.auth.AuthUI(firebase.auth());
+        ui.start('#firebaseui-auth-container', {
+          signInSuccessUrl: "/", //used tobe /index.html
+          signInOptions: [
+            firebase.auth.EmailAuthProvider.PROVIDER_ID,
+            firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          ],
+        });
+      </script>
+      <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+      <div id="firebaseui-auth-container"></div>    
+  </body>
+</html>
