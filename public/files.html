@@ -22,7 +22,7 @@
             <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
                 <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
                 <span style="font-size: 1.8em;">Bucket</span>
-                <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
+                <button class="menu" style="float:right"><a href="share.html"><<img src="icons/cloud.svg"></img></a></button>
                 <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
                 <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
                 <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
@@ -88,8 +88,12 @@
                      "public": "true"}) //update user copy to avoid double posting
                     let pB = document.getElementById("postButton") //get rid of button , replace with "posted"
                     pB.remove()
-                    createTxtField(thumbTextDiv, "Posted!")
+                    //createTxtField(thumbTextDiv, "Posted!")
                 }
+            }
+
+            function deleteImg(img_name){
+                firebase.database().ref(uid+'/'+img_name).remove()
             }
 
             //dynamically create thumbails that contain img, imgname, a post button
@@ -111,7 +115,7 @@
                 img.src = base64
                 img.width = "200"
                 img.height = "200"
-                img.onclick = function(){loadImg(this)}
+                img.onclick = function(){loadImg(name, obj)}
                 LHS.appendChild(img)
 
                 createTxtField(thumbTextDiv, name)
@@ -127,6 +131,13 @@
                 } else {
                     createTxtField(thumbTextDiv, "Posted!")
                 }
+
+                const delButton = document.createElement("button")
+                const dText = document.createTextNode("Delete")
+                delButton.appendChild(dText)
+                delButton.onclick = function(){deleteImg(name)}
+                thumbTextDiv.appendChild(delButton)
+
 
                 RHS.appendChild(thumbTextDiv)
                 newRow.appendChild(LHS)
@@ -149,8 +160,9 @@
                 });
             }
 
-            function loadImg(img){
-                let b64 = img.src
+            function loadImg(name, obj){
+                let b64 = obj.URL
+                localStorage.setItem("name", name)
                 localStorage.setItem("imageToLoad", b64)
                 window.location.href = "/index.html"
             }

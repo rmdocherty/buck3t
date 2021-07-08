@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Share</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Add stylesheet, the favicon and robot font-->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel=icon href=icons/favicon.png>
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <style>
+    body {
+        font-family: 'Roboto'; font-size: 1em;
+    }
+    </style>
+  </head>
+    <!-- This only works when deployed lol-->
+    <h1> </h1>
+    <body>
+        <div id="topNav">
+            <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
+                <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
+                <span style="font-size: 1.8em;">Bucket</span>
+                <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
+                <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
+                <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
+                <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
+            </div>
+        </div>
+
+        <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
+        <!--
+        <div class="dropdown" style="padding-top: 5%;">
+            <button class="dropbtn">Dropdown</button>
+            <div class="dropdown-content">
+              <a onclick="setImgChoice('Image')">Images</a>
+              <a onclick="setImgChoice('Template')">Template</a>
+            </div>
+          </div>
+        -->
+
+
+        <ul id="parentList" width = 90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0;"></ul>
+
+        <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+        <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+        <script src="/__/firebase/8.7.0/firebase-app.js"></script>
+        <!-- Add Firebase products that you want to use -->
+        <script src="/__/firebase/8.7.0/firebase-auth.js"></script>
+        <script src="/__/firebase/8.7.0/firebase-database.js"></script>
+        <script src="/__/firebase/init.js"></script>
+         <!-- <script src="masonry.js"></script> -->
+        <script>
+            var uid = ""
+                imgOption = "Image"
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    uid = user.uid
+                    console.log("user ID: ", uid)
+                    getImages()
+                    //imgOption = "Template"
+                    //getFiles()
+                    //setImgChoice("Image")
+                } else {
+                    // No user is signed in.
+                }
+            });
+
+            function setImgChoice(option){
+                imgOption = option
+                if (imgOption === "Image"){
+                    hideClass("Templates")
+                    showClass("Images")
+                } else {
+                    hideClass("Images")
+                    showClass("Templates")
+                }
+            }
+
+            function hideClass(className){
+                console.log(className)
+                let ToHide = document.getElementsByClassName(className); //divsToHide is an array
+                for(let i = 0; i < ToHide.length; i++){
+                    //divsToHide[i].style.visibility = "hidden"; // or
+                    ToHide[i].style.display = "none"; // depending on what you're doing
+                }
+            }
+
+            function showClass(className){
+                console.log(className)
+                let ToShow = document.getElementsByClassName(className); //divsToHide is an array
+                for(let i = 0; i < ToShow.length; i++){
+                    //divsToHide[i].style.visibility = "hidden"; // or
+                    ToShow[i].style.display = "block"; // depending on what you're doing
+                }
+            }
+
+            //given the data from the firebase snapshot create N thumbnails
+            function createThumbnails(snapshot){
+                let size = snapshot.numChildren()
+                let obj = snapshot.val()
+                console.log("making ", size, " thumbnails")
+                for (const [key, value] of Object.entries(obj)) {
+                    createImg(value, key)
+                }
+            }
+
+            //dynamically create thumbails that contain img, imgname, a post button
+            function createImg(obj, name){
+                let base64 = obj.URL
+                let public = obj.public
+                let type = obj.type
+                let parentList = document.getElementById("parentList")
+                
+                const newItem = document.createElement("li")
+
+                let img = document.createElement("img")
+                img.src = base64
+                img.width = "250"
+                img.height = "250"
+                img.classList.add("fb")
+                img.onclick = function(){loadImg(name, obj)}
+                newItem.appendChild(img)
+
+                if (imgOption === "Image"){
+                    newItem.classList.add("Images")
+                } else {
+                    newItem.classList.add("Templates")
+                }
+                parentList.appendChild(newItem)
+            }
+
+            //grab the images 
+            function getImages(){
+                const public = firebase.database().ref("public/Image").limitToFirst(10);
+                public.get().then((snapshot) => {
+                    if (snapshot.exists()) {
+                        //console.log(snapshot.val());
+                        createThumbnails(snapshot)
+                        getTemplates()
+                        setImgChoice("Image")
+                    } else {    
+                        console.log("No data available");
+                    }
+                    }).catch((error) => {
+                        console.error(error);
+                });
+            }
+
+            function getTemplates(){
+                imgOption = "Template"
+                const public = firebase.database().ref("public/Template").limitToFirst(10);
+                public.get().then((snapshot) => {
+                    if (snapshot.exists()) {
+                        //console.log(snapshot.val());
+                        createThumbnails(snapshot)
+                    } else {    
+                        console.log("No data available");
+                    }
+                    }).catch((error) => {
+                        console.error(error);
+                });
+            }
+
+            function loadImg(name, obj){
+                let b64 = obj.URL
+                localStorage.setItem("name", name)
+                localStorage.setItem("imageToLoad", b64)
+                window.location.href = "/index.html"
+            }
+        </script>
+  </body>
+</html>

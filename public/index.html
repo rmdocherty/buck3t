@@ -193,7 +193,7 @@ body {
     <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
         <button class="menu" onclick = "openNav()"><img src="icons/menu.svg"></button>
         <span style="font-size: 1.8em;">Bucket</span>
-        <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
+        <button class="menu" style="float:right"><a href="share.html"><img src="icons/cloud.svg"></img></a></button>
         <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
         <button class="menu" style="float:right"><a href="login.html"><img src="icons/account.svg"></img></a></button>
         <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>
@@ -237,8 +237,8 @@ body {
         scrollX = 0 //variables for scroll
         scrollY = 0
         uid = ""
-
-        var uid = ""
+        name = "none"
+        template = true
 
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -255,8 +255,10 @@ body {
         if (b64 === null) {
             console.log("No image to load")//do nothing
         } else {
-            console.log("Image loaded!")
             img.src = b64
+            name = localStorage.getItem("name")
+            console.log("Image " + name + " has been loaded!")
+            //localStorage.clear() - add this if annoying bugs happen with the name & save/load
         }
     }
     
@@ -313,6 +315,7 @@ body {
 
     //Handler for click events that changes depending on mode
     canvas.addEventListener("click", function(event){
+        template = false
         if (mode=="Draw"){
             return 0
         }
@@ -331,6 +334,7 @@ body {
     })
     //Functions for drawing using pen
     press = function(e){ //mousedown
+        template = false
         if (mode=="Draw"){
             var mouseX = ((e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft)*(canvas.width/canvas.offsetWidth)
 			    mouseY = ((e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop)*(canvas.height/canvas.offsetHeight)
@@ -413,6 +417,7 @@ body {
     const inputElement = document.getElementById("upload");
     inputElement.addEventListener("change", handleFiles, false);
     function handleFiles() {
+        name = "none" //reset name
         let img = document.getElementById("turtle");
         let fileList = this.files; /* now you can work with the file list */
         let file = fileList[0]
@@ -565,6 +570,7 @@ body {
     the cloud function and send the data. Then launch an async wait for the respose and set the img object to the returned data 
     */
     function convert(){
+        name = "none" //reset name
         let img = document.getElementById("turtle");
         data = canvas.toDataURL("image/jpeg") //jpeg works on chrome and ff, bmp only on ff
         let split = data.split(",")
@@ -614,9 +620,18 @@ body {
     }
 
     function saveImage(){
-        let img_name = prompt("Name of image?")
+        //let img_name = "none"
+        let type = "Template"
+        if (name == "none"){ //if name === "" we haven't loaded an image
+            name = prompt("Name of image?")
+        } else {
+            //do nothing, name 
+        }
+        if (template === false){
+            type = "Image"
+        }
         let base64 = canvas.toDataURL("image/bmp") //set this back to jpeg in case doesn't work
-        firebase.database().ref(uid+'/'+img_name).set({"URL": base64, "type": "Image",
+        firebase.database().ref(uid+'/'+name).set({"URL": base64, "type": type,
                      "public": "false"})
 
     }
