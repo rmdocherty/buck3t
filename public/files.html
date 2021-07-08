@@ -25,11 +25,12 @@
                 <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
                 <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
                 <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
-                <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>
+                <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
             </div>
         </div>
 
-        <div id="thumbnailParent" width = 90% height= 90% style="padding-top: 5%;"></div>
+        <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
+        <table id="parentTable" width = 90% style="padding-top: 5%; padding-left: 0; padding-right: 0;"></table>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
         <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -50,6 +51,7 @@
                 }
             });
 
+            //given the data from the firebase snapshot create N thumbnails
             function createThumbnails(snapshot){
                 let size = snapshot.numChildren()
                 let obj = snapshot.val()
@@ -64,28 +66,67 @@
                     /*for (const [key2, value2] of Object.entries(value)){
                         console.log(`${key2}: ${value2}`)
                     }*/
-                    createImg(value.URL, key)
+                    createImg(value, key)
                 }
             }
 
-            function createImg(base64, name){
-                let parentDiv = document.getElementById("thumbnailParent")
-                const thumbnailDiv = document.createElement("div")
-                //thumbnailDiv.style = "float: left;"
+            //repeated twice so written as fn
+            function createTxtField(parentObj, text){
+                const newP = document.createElement("p")
+                const pText = document.createTextNode(text)
+                newP.appendChild(pText)
+                parentObj.appendChild(newP)
+            }
+
+            //function to be tied to post button - adds the image to public directory and modifies user version (i.e to avoid posting twice)
+            function postImg(img_name, obj){
+                if (obj.public === "false"){
+                    firebase.database().ref('public/' +obj.type + '/' +img_name).set({"URL": obj.URL, "type": obj.type,
+                     "public": "true"}) //add to public directory
+                    firebase.database().ref(uid+'/'+img_name).set({"URL": obj.URL, "type": obj.type,
+                     "public": "true"}) //update user copy to avoid double posting
+                }
+            }
+
+            //dynamically create thumbails that contain img, imgname, a post button
+            function createImg(obj, name){
+                let base64 = obj.URL
+                let public = obj.public
+                let type = obj.type
+                let parentTable = document.getElementById("parentTable")
+
+                const newRow = document.createElement("tr")
+                const LHS = document.createElement("th")
+                const RHS = document.createElement("th")
+                const thumbTextDiv = document.createElement("div")
+
+                LHS.style = "float:left; padding: 0px 0px 0px 0px;"
+                RHS.style = "float:left; padding-left: 0.5%; text-align: left;"
+
                 let img = document.createElement("img")
                 img.src = base64
-                img.width = "100"
-                img.height = "100"
-                thumbnailDiv.appendChild(img)
-                
-                const thumbTextDiv = document.createElement("div")
-                const thumbName = document.createTextNode(name)
-                //thumbTextDiv.style = "float: left;"
-                thumbTextDiv.appendChild(thumbName)
-                thumbnailDiv.appendChild(thumbTextDiv)
+                img.width = "200"
+                img.height = "200"
+                img.onclick = function(){loadImg(this)}
+                LHS.appendChild(img)
 
-                parentDiv.appendChild(thumbnailDiv) 
-                //document.body.innerHTML += "<img height=100 px width=100px src='" + base64 + "''></img>"
+                createTxtField(thumbTextDiv, name)
+                createTxtField(thumbTextDiv, "Type: " + type)
+
+                if (obj.public === "false"){
+                    const postButton = document.createElement("button")
+                    const bText = document.createTextNode("Post")
+                    postButton.appendChild(bText)
+                    postButton.onclick = function(){postImg(name, obj)}
+                    thumbTextDiv.appendChild(postButton)
+                } else {
+                    createTxtField(thumbTextDiv, "Posted!")
+                }
+
+                RHS.appendChild(thumbTextDiv)
+                newRow.appendChild(LHS)
+                newRow.appendChild(RHS)
+                parentTable.appendChild(newRow)
             }
 
             //grab the images 
@@ -101,6 +142,12 @@
                     }).catch((error) => {
                         console.error(error);
                 });
+            }
+
+            function loadImg(img){
+                let b64 = img.src
+                localStorage.setItem("imageToLoad", b64)
+                window.location.href = "/index.html"
             }
         </script>
   </body>

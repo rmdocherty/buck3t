@@ -248,6 +248,17 @@ body {
             // No user is signed in.
         }
     });
+
+    //if image to load not null, load that as img for canvas
+    window.onload = function(){
+        const b64 = localStorage.getItem("imageToLoad")
+        if (b64 === null) {
+            console.log("No image to load")//do nothing
+        } else {
+            console.log("Image loaded!")
+            img.src = b64
+        }
+    }
     
     //event that happens when image loaded when uploaded
     img.addEventListener("load", e=>{
@@ -604,7 +615,7 @@ body {
 
     function saveImage(){
         let img_name = prompt("Name of image?")
-        let base64 = canvas.toDataURL("image/jpeg")
+        let base64 = canvas.toDataURL("image/png") //set this back to jpeg in case doesn't work
         firebase.database().ref(uid+'/'+img_name).set({"URL": base64, "type": "image",
                      "public": "false"})
 
