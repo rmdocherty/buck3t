@@ -74,6 +74,7 @@
             function createTxtField(parentObj, text){
                 const newP = document.createElement("p")
                 const pText = document.createTextNode(text)
+                newP.style = "margin: 1px 1px 1px 1px;"
                 newP.appendChild(pText)
                 parentObj.appendChild(newP)
             }
@@ -85,6 +86,9 @@
                      "public": "true"}) //add to public directory
                     firebase.database().ref(uid+'/'+img_name).set({"URL": obj.URL, "type": obj.type,
                      "public": "true"}) //update user copy to avoid double posting
+                    let pB = document.getElementById("postButton") //get rid of button , replace with "posted"
+                    pB.remove()
+                    createTxtField(thumbTextDiv, "Posted!")
                 }
             }
 
@@ -111,11 +115,12 @@
                 LHS.appendChild(img)
 
                 createTxtField(thumbTextDiv, name)
-                createTxtField(thumbTextDiv, "Type: " + type)
+                createTxtField(thumbTextDiv, type)
 
                 if (obj.public === "false"){
                     const postButton = document.createElement("button")
                     const bText = document.createTextNode("Post")
+                    postButton.id = "postButton"
                     postButton.appendChild(bText)
                     postButton.onclick = function(){postImg(name, obj)}
                     thumbTextDiv.appendChild(postButton)
