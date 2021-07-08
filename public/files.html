@@ -3,31 +3,105 @@
   <head>
     <meta charset="UTF-8">
     <title>Files</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Add stylesheet, the favicon and robot font-->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel=icon href=icons/favicon.png>
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <style>
+    body {
+        font-family: 'Roboto'; font-size: 1em;
+    }
+    </style>
   </head>
     <!-- This only works when deployed lol-->
     <h1> </h1>
     <body>
         <div id="topNav">
             <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
-                <button class="menu" onclick = "openNav()" display=none><img src="icons/menu.svg"></button>
+                <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
                 <span style="font-size: 1.8em;">Bucket</span>
                 <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
-                <button class="menu" style="float:right"><img src="icons/folder.svg"></img></button>
+                <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
                 <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
                 <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>
             </div>
-            <img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
-            <div id = "container" style="height:100%; width:100%;  padding-top: 5%;"> <!--Alignment of canvas isn't working at top-->
-                <canvas id="myCanvas"></canvas>
-            </div> 
         </div>
+
+        <div id="thumbnailParent" width = 90% height= 90% style="padding-top: 5%;"></div>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
         <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
         <script src="/__/firebase/8.7.0/firebase-app.js"></script>
         <!-- Add Firebase products that you want to use -->
         <script src="/__/firebase/8.7.0/firebase-auth.js"></script>
-        <script src="/__/firebase/8.7.0/firebase-firestore.js"></script>
+        <script src="/__/firebase/8.7.0/firebase-database.js"></script>
         <script src="/__/firebase/init.js"></script>
+        <script>
+            var uid = ""
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    uid = user.uid
+                    console.log("user ID: ", uid)
+                    getFiles()
+                } else {
+                    // No user is signed in.
+                }
+            });
+
+            function createThumbnails(snapshot){
+                let size = snapshot.numChildren()
+                let obj = snapshot.val()
+                console.log("making ", size, " thumbnails")
+                /*for (i=0; i<size; i++){
+                    obj = snapshot.val()[i]
+                    console.log(i, obj["URL"])
+                }*/
+
+                for (const [key, value] of Object.entries(obj)) {
+                    //console.log(`${key}: ${value}`);
+                    /*for (const [key2, value2] of Object.entries(value)){
+                        console.log(`${key2}: ${value2}`)
+                    }*/
+                    createImg(value.URL, key)
+                }
+            }
+
+            function createImg(base64, name){
+                let parentDiv = document.getElementById("thumbnailParent")
+                const thumbnailDiv = document.createElement("div")
+                //thumbnailDiv.style = "float: left;"
+                let img = document.createElement("img")
+                img.src = base64
+                img.width = "100"
+                img.height = "100"
+                thumbnailDiv.appendChild(img)
+                
+                const thumbTextDiv = document.createElement("div")
+                const thumbName = document.createTextNode(name)
+                //thumbTextDiv.style = "float: left;"
+                thumbTextDiv.appendChild(thumbName)
+                thumbnailDiv.appendChild(thumbTextDiv)
+
+                parentDiv.appendChild(thumbnailDiv) 
+                //document.body.innerHTML += "<img height=100 px width=100px src='" + base64 + "''></img>"
+            }
+
+            //grab the images 
+            function getFiles(){
+                const dbRef = firebase.database().ref();
+                dbRef.child(uid).get().then((snapshot) => {
+                    if (snapshot.exists()) {
+                        //console.log(snapshot.val());
+                        createThumbnails(snapshot)
+                    } else {
+                        console.log("No data available");
+                    }
+                    }).catch((error) => {
+                        console.error(error);
+                });
+            }
+        </script>
   </body>
 </html>

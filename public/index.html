@@ -604,7 +604,8 @@ body {
 
     function saveImage(){
         let img_name = prompt("Name of image?")
-        firebase.database().ref(uid+'/'+img_name).set({"URL": "none", "type": "image",
+        let base64 = canvas.toDataURL("image/jpeg")
+        firebase.database().ref(uid+'/'+img_name).set({"URL": base64, "type": "image",
                      "public": "false"})
 
     }
