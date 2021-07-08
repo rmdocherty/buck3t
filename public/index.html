@@ -51,9 +51,10 @@ body {
     <div onclick="download()" class="menubutton">
         <img src="icons/download.svg">
     </div>
-    <div onclick="showHelp()" class="menubutton">
-        <img src="icons/information-outline.svg">
+    <div onclick="saveImage()" class="menubutton">
+        <img src="icons/floppy.svg">
     </div>
+    
 </div>
 
 <!--From the jscolor examples page-->
@@ -151,7 +152,15 @@ body {
                         <img src="icons/download.svg" >
                     </th>
                     <th style="float:left; padding-left: 7%; text-align: left;">
-                        <p>Download the current image</p>
+                        <p>Download the current image - doesn't work on mobile so just take a screenshot</p>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <img src="icons/floppy.svg" >
+                    </th>
+                    <th style="float:left; padding-left: 7%; text-align: left;">
+                        <p>Save the image to your account</p>
                     </th>
                 </tr>
             </table>
@@ -180,13 +189,14 @@ body {
 </div>
 
 <!--Placeholder image and canvas objects-->
-<div>
+<div id="topNav">
     <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
         <button class="menu" onclick = "openNav()"><img src="icons/menu.svg"></button>
         <span style="font-size: 1.8em;">Bucket</span>
         <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
-        <button class="menu" style="float:right"><img src="icons/folder.svg"></img></button>
-        <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
+        <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
+        <button class="menu" style="float:right"><a href="login.html"><img src="icons/account.svg"></img></a></button>
+        <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>
     </div>
     <img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
     <div id = "container" style="height:100%; width:100%;  padding-top: 5%;"> <!--Alignment of canvas isn't working at top-->
@@ -196,6 +206,14 @@ body {
 
 <!--Import Js color for the pickers-->
 <script src = "jscolor.js"></script>
+
+<!-- FIREBASE stuff -->
+<script src="/__/firebase/8.7.0/firebase-app.js"></script>
+<script src="/__/firebase/8.7.0/firebase-auth.js"></script>
+<script src="/__/firebase/8.7.0/firebase-firestore.js"></script>
+<script src="/__/firebase/8.7.0/firebase-database.js"></script>
+<script src="/__/firebase/init.js"></script>
+
 
 <script>
     //Define some global variables
@@ -218,6 +236,18 @@ body {
 
         scrollX = 0 //variables for scroll
         scrollY = 0
+        uid = ""
+
+        var uid = ""
+
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            uid = user.uid
+            console.log("user ID: ", uid)
+        } else {
+            // No user is signed in.
+        }
+    });
     
     //event that happens when image loaded when uploaded
     img.addEventListener("load", e=>{
@@ -571,6 +601,15 @@ body {
         }
         pages[w-1].style.display = "block"
     }
+
+    function saveImage(){
+        let img_name = prompt("Name of image?")
+        firebase.database().ref(uid+'/'+img_name).set({"URL": "none", "type": "image",
+                     "public": "false"})
+
+    }
+
+
       
 </script>
 </body>

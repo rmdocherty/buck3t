@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Files</title>
+  </head>
+    <!-- This only works when deployed lol-->
+    <h1> </h1>
+    <body>
+        <div id="topNav">
+            <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
+                <button class="menu" onclick = "openNav()" display=none><img src="icons/menu.svg"></button>
+                <span style="font-size: 1.8em;">Bucket</span>
+                <button class="menu" style="float:right"><img src="icons/cloud.svg"></img></button>
+                <button class="menu" style="float:right"><img src="icons/folder.svg"></img></button>
+                <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
+                <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>
+            </div>
+            <img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
+            <div id = "container" style="height:100%; width:100%;  padding-top: 5%;"> <!--Alignment of canvas isn't working at top-->
+                <canvas id="myCanvas"></canvas>
+            </div> 
+        </div>
+
+        <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+        <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+        <script src="/__/firebase/8.7.0/firebase-app.js"></script>
+        <!-- Add Firebase products that you want to use -->
+        <script src="/__/firebase/8.7.0/firebase-auth.js"></script>
+        <script src="/__/firebase/8.7.0/firebase-firestore.js"></script>
+        <script src="/__/firebase/init.js"></script>
+  </body>
+</html>
