@@ -31,6 +31,13 @@
 
         <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
         
+
+        <div class="toggle" style="padding-top: 5%; padding-left: 48%; display: inline-flex;">
+            <button class="toggle" onclick="setImgChoice('Image')" >Images</button>
+            <button class="toggle" onclick="setImgChoice('Template')">Templates</button>
+        </div>
+
+        <!-- 
         <div class="dropdown" style="padding-top: 5%;">
             <button class="dropbtn">Dropdown</button>
             <div class="dropdown-content">
@@ -38,14 +45,12 @@
               <a onclick="setImgChoice('Template')">Template</a>
             </div>
           </div>
-        
+        -->
 
         <div id="imgDiv" class="Images" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
-            <ul id="imgList"></ul>
         </div>
         
         <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: none;">
-            <ul id="tempList"></ul>
         </div>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
@@ -55,17 +60,43 @@
         <script src="/__/firebase/8.7.0/firebase-auth.js"></script>
         <script src="/__/firebase/8.7.0/firebase-database.js"></script>
         <script src="/__/firebase/init.js"></script>
-         <!-- <script src="masonry.js"></script> -->
+        <script src="masonry.js"></script>
+        <!-- <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script> --> <!-- make this local later?-->
+        <script src="imagesLoaded.js"></script>
         <script>
             var uid = ""
                 imgOption = "Image"
+                tempGrid = document.getElementById("tempDiv")
+                imgGrid = document.getElementById("imgGrid")
+            var msnryTemp = new Masonry( tempGrid, {
+                itemSelector: '.grid-item',
+                percentPosition: true,
+                columnWidth: 200
+                })
+            var msnryImg = new Masonry( imgGrid, {
+                itemSelector: '.grid-item',
+                percentPosition: true,
+                columnWidth: 200
+                })
+            
+            
+            imagesLoaded( tempGrid ).on( 'progress', function() {
+                // layout Masonry after each image loads
+                msnryTemp.layout()
+            });
+            
+            imagesLoaded( imgGrid ).on( 'progress', function() {
+                // layout Masonry after each image loads
+                msnryImg.layout();
+            });
+
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     uid = user.uid
                     console.log("user ID: ", uid)
                     getFiles("Image")
-                    imgOption = "Template"
                     getFiles("Template")
+                    //makeGrids("Image")
                     imgOption = "Image" //need to set this s.t the show/hide works as expected
                     //setImgChoice("Image")
                 } else {
@@ -76,34 +107,33 @@
             function setImgChoice(option){
                 imgOption = option
                 if (imgOption === "Image"){
-                    hideClass("Templates")
-                    showClass("Images")
+                    hideClass("tempDiv")
+                    showClass("imgDiv")
                 } else {
-                    hideClass("Images")
-                    showClass("Templates")
+                    hideClass("imgDiv")
+                    showClass("tempDiv")
                 }
             }
 
             function hideClass(className){
-                console.log(className)
-                let ToHide = document.getElementsByClassName(className); //divsToHide is an array
-                ToHide.style.display = "none"; // depending on what you're doing
+                let toHide = document.getElementById(className); //divsToHide is an array
+                toHide.style.display = "none"; // depending on what you're doing
             }
 
             function showClass(className){
-                console.log(className)
-                let ToShow = document.getElementsByClassName(className); //divsToHide is an array
-                ToShow.style.display = "block"; // depending on what you're doing
+                let toShow = document.getElementById(className); //divsToHide is an array
+                toShow.style.display = "block"; // depending on what you're doing
             }
 
             //given the data from the firebase snapshot create N thumbnails
-            function createThumbnails(snapshot){
+            function createThumbnails(snapshot, type){
                 let size = snapshot.numChildren()
                 let obj = snapshot.val()
                 console.log("making ", size, " thumbnails")
                 for (const [key, value] of Object.entries(obj)) {
                     createImg(value, key)
                 }
+                //makeGrid(type)
             }
 
             //dynamically create thumbails that contain img, imgname, a post button
@@ -113,23 +143,52 @@
                 let type = obj.type
                 let parentList = ""
 
-                if (imgOption === "Image"){
-                    parentList = document.getElementById("imgList")
+                if (type === "Image"){
+                    parentList = document.getElementById("imgDiv")
                 } else {
-                    parentList = document.getElementById("tempList")
+                    parentList = document.getElementById("tempDiv")
                 }
                 
-                const newItem = document.createElement("li")
+                const newDiv = document.createElement("div")
 
                 let img = document.createElement("img")
                 img.src = base64
-                img.width = "250"
-                img.height = "250"
-                img.classList.add("fb")
+                scaleImg(img)
+                /*img.width = "250"
+                img.height = "250" */
+                newDiv.classList.add("grid-item")
                 img.onclick = function(){loadImg(name, obj)}
 
-                newItem.appendChild(img)
-                parentList.appendChild(newItem)
+                newDiv.appendChild(img)
+                parentList.appendChild(newDiv)
+
+                
+                if (type === "Image"){
+                    msnryImg.appended(newDiv)
+                    msnryImg.layout()
+                } else {
+                    msnryTemp.appended(newDiv)
+                    msnryTemp.layout()
+                }
+
+            }
+
+            function scaleImg(img) {
+                let w = img.width
+                    h = img.height
+                const smallestSide = 200 //set this to what you want smallest thing to be
+                if (w > h){ //landscape
+                    sf = smallestSide / h
+                    nw = w * sf
+                    nh = smallestSide
+                } else { //portait
+                    sf = smallestSide / w
+                    nh = h * sf
+                    nw = smallestSide
+                }
+                console.log(w, h, nw, nh)
+                img.height = nh
+                img.width = nw
             }
 
             //grab the images 
@@ -138,7 +197,7 @@
                 public.get().then((snapshot) => {
                     if (snapshot.exists()) {
                         //console.log(snapshot.val());
-                        createThumbnails(snapshot)
+                        createThumbnails(snapshot, type)
                         //getTemplates()
                     } else {    
                         console.log("No data available");
@@ -148,20 +207,27 @@
                 });
             }
 
-            /*function getTemplates(){
-                imgOption = "Template"
-                const public = firebase.database().ref("public/Template").limitToFirst(10);
-                public.get().then((snapshot) => {
-                    if (snapshot.exists()) {
-                        //console.log(snapshot.val());
-                        createThumbnails(snapshot)
-                    } else {    
-                        console.log("No data available");
-                    }
-                    }).catch((error) => {
-                        console.error(error);
-                });
-            } */
+            
+            function makeGrids(grid){
+
+                /*if (type === "Image") {
+                    var grid = document.getElementById("imgDiv")
+                } else {
+                    var grid = document.getElementById("tempDiv")
+                }
+                var msnry = new Masonry(grid); */
+                var msnryTemp = new Masonry( tempGrid, {
+                    itemSelector: '.grid-item',
+                    percentPosition: true,
+                    columnWidth: 200
+                })
+                var msnryImg = new Masonry( imgGrid, {
+                    itemSelector: '.grid-item',
+                    percentPosition: true,
+                    columnWidth: 200
+                })
+                
+            } 
 
             function loadImg(name, obj){
                 let b64 = obj.URL

@@ -258,6 +258,7 @@ body {
             img.src = b64
             name = localStorage.getItem("name")
             console.log("Image " + name + " has been loaded!")
+            localStorage.clear()
             //localStorage.clear() - add this if annoying bugs happen with the name & save/load
         }
     }
