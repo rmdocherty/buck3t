@@ -30,7 +30,7 @@
         </div>
 
         <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
-        <!--
+        
         <div class="dropdown" style="padding-top: 5%;">
             <button class="dropbtn">Dropdown</button>
             <div class="dropdown-content">
@@ -38,10 +38,15 @@
               <a onclick="setImgChoice('Template')">Template</a>
             </div>
           </div>
-        -->
+        
 
-
-        <ul id="parentList" width = 90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0;"></ul>
+        <div id="imgDiv" class="Images" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
+            <ul id="imgList"></ul>
+        </div>
+        
+        <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: none;">
+            <ul id="tempList"></ul>
+        </div>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
         <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -58,9 +63,10 @@
                 if (user) {
                     uid = user.uid
                     console.log("user ID: ", uid)
-                    getImages()
-                    //imgOption = "Template"
-                    //getFiles()
+                    getFiles("Image")
+                    imgOption = "Template"
+                    getFiles("Template")
+                    imgOption = "Image" //need to set this s.t the show/hide works as expected
                     //setImgChoice("Image")
                 } else {
                     // No user is signed in.
@@ -81,19 +87,13 @@
             function hideClass(className){
                 console.log(className)
                 let ToHide = document.getElementsByClassName(className); //divsToHide is an array
-                for(let i = 0; i < ToHide.length; i++){
-                    //divsToHide[i].style.visibility = "hidden"; // or
-                    ToHide[i].style.display = "none"; // depending on what you're doing
-                }
+                ToHide.style.display = "none"; // depending on what you're doing
             }
 
             function showClass(className){
                 console.log(className)
                 let ToShow = document.getElementsByClassName(className); //divsToHide is an array
-                for(let i = 0; i < ToShow.length; i++){
-                    //divsToHide[i].style.visibility = "hidden"; // or
-                    ToShow[i].style.display = "block"; // depending on what you're doing
-                }
+                ToShow.style.display = "block"; // depending on what you're doing
             }
 
             //given the data from the firebase snapshot create N thumbnails
@@ -111,7 +111,13 @@
                 let base64 = obj.URL
                 let public = obj.public
                 let type = obj.type
-                let parentList = document.getElementById("parentList")
+                let parentList = ""
+
+                if (imgOption === "Image"){
+                    parentList = document.getElementById("imgList")
+                } else {
+                    parentList = document.getElementById("tempList")
+                }
                 
                 const newItem = document.createElement("li")
 
@@ -121,25 +127,19 @@
                 img.height = "250"
                 img.classList.add("fb")
                 img.onclick = function(){loadImg(name, obj)}
-                newItem.appendChild(img)
 
-                if (imgOption === "Image"){
-                    newItem.classList.add("Images")
-                } else {
-                    newItem.classList.add("Templates")
-                }
+                newItem.appendChild(img)
                 parentList.appendChild(newItem)
             }
 
             //grab the images 
-            function getImages(){
-                const public = firebase.database().ref("public/Image").limitToFirst(10);
+            function getFiles(type){
+                const public = firebase.database().ref("public/" + type).limitToFirst(10);
                 public.get().then((snapshot) => {
                     if (snapshot.exists()) {
                         //console.log(snapshot.val());
                         createThumbnails(snapshot)
-                        getTemplates()
-                        setImgChoice("Image")
+                        //getTemplates()
                     } else {    
                         console.log("No data available");
                     }
@@ -148,7 +148,7 @@
                 });
             }
 
-            function getTemplates(){
+            /*function getTemplates(){
                 imgOption = "Template"
                 const public = firebase.database().ref("public/Template").limitToFirst(10);
                 public.get().then((snapshot) => {
@@ -161,7 +161,7 @@
                     }).catch((error) => {
                         console.error(error);
                 });
-            }
+            } */
 
             function loadImg(name, obj){
                 let b64 = obj.URL
