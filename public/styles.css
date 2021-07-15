@@ -385,11 +385,17 @@ li:last-child {
      TOGGLE STUFF
 =======================*/
 
+.toggle div{
+  padding-top: 5%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .toggle button {
   background-color:#ededed;
-  font-size: 1.2em;
-  padding-left: auto;
-  padding-right: auto;
+  font-size: 1em;
 }
 
 .toggle button:focus{

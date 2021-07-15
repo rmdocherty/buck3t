@@ -16,43 +16,35 @@
     </style>
   </head>
     <!-- This only works when deployed lol-->
-    <h1> </h1>
     <body>
-        <div id="topNav">
-            <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;">
-                <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
-                <span style="font-size: 1.8em;">Bucket</span>
-                <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
-                <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
-                <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
-                <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
+        <div>
+            <div id="topNav">
+                <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.5%; padding-bottom: 0.5%;"> <!-- top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;-->
+                    <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
+                    <span style="font-size: 1.8em;">Bucket</span>
+                    <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
+                    <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
+                    <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
+                    <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
+                </div>
             </div>
-        </div>
 
-        <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
-        
-
-        <div class="toggle" style="padding-top: 5%; display: inline-flex;">
-            <button class="toggle" onclick="setImgChoice('Image')" >Images</button>
-            <button class="toggle" onclick="setImgChoice('Template')">Templates</button>
-        </div>
-
-        <!-- 
-        <div class="dropdown" style="padding-top: 5%;">
-            <button class="dropbtn">Dropdown</button>
-            <div class="dropdown-content">
-              <a onclick="setImgChoice('Image')">Images</a>
-              <a onclick="setImgChoice('Template')">Template</a>
+            <div id="blankDiv" style="pointer-events: none;">
+                
             </div>
-          </div>
-        -->
 
-        <div id="imgDiv" class="Images" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
-            <div></div>
-        </div>
-        
-        <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block; opacity: 0">
-            <div></div>
+            <div class="toggle" style="padding-top: 5%;">
+                <button class="toggle" onclick="setImgChoice('Image')" >Images</button>
+                <button class="toggle" onclick="setImgChoice('Template')">Templates</button>
+            </div>
+
+            <div id="imgDiv" class="Images" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
+                <div></div>
+            </div>
+            
+            <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block; opacity: 0">
+                <div></div>
+            </div>
         </div>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
@@ -70,7 +62,7 @@
                 imgOption = "Image"
             //initialise grid stuff
                 tempGrid = document.getElementById("tempDiv")
-                imgGrid = document.getElementById("imgGrid")
+                imgGrid = document.getElementById("imgDiv")
             var msnryTemp = new Masonry( tempGrid, {
                 itemSelector: '.grid-item',
                 percentPosition: true,
@@ -83,6 +75,14 @@
                 })
             const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
             const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            
+
+            window.onload = function() {
+                let topNavHeight = document.getElementById("topNav").offsetHeight //make new blank directly below topbar and give it its height
+                let blankDiv = document.getElementById("blankDiv")
+                //console.log(topNavHeight)
+                blankDiv.style.height = topNavHeight
+            }
             
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -124,7 +124,7 @@
             function createThumbnails(snapshot, type){
                 let size = snapshot.numChildren()
                 let obj = snapshot.val()
-                console.log("making ", size, " thumbnails")
+                //console.log("making ", size, " thumbnails")
                 for (const [key, value] of Object.entries(obj)) {
                     createImg(value, key)
                 }
@@ -132,16 +132,12 @@
 
             //trigger this every time a thumbnail image fully loads
             function addToMasonry(elem, type) {
-                console.log(type, " of image has been loaded")
                 if (type === "Image"){
-                    console.log("adding to images")
                     msnryImg.appended(elem)
                     msnryImg.layout()
                 } else {
-                    console.log("adding to templates")
                     msnryTemp.appended(elem)
                     msnryTemp.layout()
-                    console.log("laying out msrny")
                 }
             }
 
@@ -177,7 +173,7 @@
             function scaleImg(img) {
                 let w = img.width
                     h = img.height
-                const smallestSide = vw/4 //set this to what you want smallest thing to be
+                const smallestSide = vw/3.5 //set this to what you want smallest thing to be
                 if (w > h){ //landscape
                     sf = smallestSide / h
                     nw = w * sf
@@ -187,14 +183,14 @@
                     nh = h * sf
                     nw = smallestSide
                 }
-                console.log(w, h, nw, nh)
+                //console.log(w, h, nw, nh)
                 img.height = nh
                 img.width = nw
             }
 
             //grab the images 
             function getFiles(type){
-                const public = firebase.database().ref("public/" + type).limitToFirst(10);
+                const public = firebase.database().ref("public/" + type).limitToFirst(30);
                 public.get().then((snapshot) => {
                     if (snapshot.exists()) {
                         //console.log(snapshot.val());
