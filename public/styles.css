@@ -387,8 +387,9 @@ li:last-child {
 
 .toggle button {
   background-color:#ededed;
-  min-width: 160px;
   font-size: 1.2em;
+  padding-left: auto;
+  padding-right: auto;
 }
 
 .toggle button:focus{

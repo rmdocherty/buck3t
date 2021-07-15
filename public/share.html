@@ -32,7 +32,7 @@
         <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
         
 
-        <div class="toggle" style="padding-top: 5%; padding-left: 48%; display: inline-flex;">
+        <div class="toggle" style="padding-top: 5%; display: inline-flex;">
             <button class="toggle" onclick="setImgChoice('Image')" >Images</button>
             <button class="toggle" onclick="setImgChoice('Template')">Templates</button>
         </div>
@@ -51,7 +51,7 @@
             <div></div>
         </div>
         
-        <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
+        <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block; opacity: 0">
             <div></div>
         </div>
 
@@ -68,6 +68,7 @@
         <script>
             var uid = ""
                 imgOption = "Image"
+            //initialise grid stuff
                 tempGrid = document.getElementById("tempDiv")
                 imgGrid = document.getElementById("imgGrid")
             var msnryTemp = new Masonry( tempGrid, {
@@ -80,35 +81,22 @@
                 percentPosition: true,
                 columnWidth: 60
                 })
+            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
             
-            /*
-            imagesLoaded( tempGrid, function(instance) {
-                // layout Masonry after each image loads
-                console.log("All template images loaded")
-                msnryTemp.layout()
-            }); */
-            
-
-            /*
-            imagesLoaded( imgGrid ).on( 'progress', function() {
-                 // layout Masonry after each image loads
-                msnryImg.layout();
-            }); */
-
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     uid = user.uid
                     console.log("user ID: ", uid)
                     getFiles("Image")
                     getFiles("Template")
-                    //makeGrids("Image")
                     imgOption = "Image" //need to set this s.t the show/hide works as expected
-                    //setImgChoice("Image")
                 } else {
                     // No user is signed in.
                 }
             });
 
+            //hide one set, show another
             function setImgChoice(option){
                 imgOption = option
                 if (imgOption === "Image"){
@@ -120,6 +108,7 @@
                 }
             }
 
+            //hide show/images /templates
             function hideClass(className){
                 let toHide = document.getElementById(className); //divsToHide is an array
                 toHide.style.display = "none"; // depending on what you're doing
@@ -128,6 +117,7 @@
             function showClass(className){
                 let toShow = document.getElementById(className); //divsToHide is an array
                 toShow.style.display = "block"; // depending on what you're doing
+                toShow.style.opacity = 1; //the second masonry starts out hidden via opacity rather than display as images would overlap otherwise
             }
 
             //given the data from the firebase snapshot create N thumbnails
@@ -138,10 +128,9 @@
                 for (const [key, value] of Object.entries(obj)) {
                     createImg(value, key)
                 }
-                //makeGrid(type)
             }
 
-
+            //trigger this every time a thumbnail image fully loads
             function addToMasonry(elem, type) {
                 console.log(type, " of image has been loaded")
                 if (type === "Image"){
@@ -154,7 +143,6 @@
                     msnryTemp.layout()
                     console.log("laying out msrny")
                 }
-
             }
 
             //dynamically create thumbails that contain img, imgname, a post button
@@ -175,8 +163,6 @@
                 let img = document.createElement("img")
                 img.src = base64
                 scaleImg(img)
-                /*img.width = "250"
-                img.height = "250" */
                 newDiv.classList.add("grid-item")
                 img.onload = function(){addToMasonry(newDiv, type)}
                 img.onclick = function(){loadImg(name, obj)}
@@ -187,10 +173,11 @@
 
             }
 
+            //given this const scale imgs (whislt maintaining aspect ratio) s.t smallest side of image equals constant
             function scaleImg(img) {
                 let w = img.width
                     h = img.height
-                const smallestSide = 200 //set this to what you want smallest thing to be
+                const smallestSide = vw/3 //set this to what you want smallest thing to be
                 if (w > h){ //landscape
                     sf = smallestSide / h
                     nw = w * sf
@@ -221,28 +208,7 @@
                 });
             }
 
-            
-            function makeGrids(grid){
-
-                /*if (type === "Image") {
-                    var grid = document.getElementById("imgDiv")
-                } else {
-                    var grid = document.getElementById("tempDiv")
-                }
-                var msnry = new Masonry(grid); */
-                var msnryTemp = new Masonry( tempGrid, {
-                    itemSelector: '.grid-item',
-                    percentPosition: true,
-                    columnWidth: 200
-                })
-                var msnryImg = new Masonry( imgGrid, {
-                    itemSelector: '.grid-item',
-                    percentPosition: true,
-                    columnWidth: 200
-                })
-                
-            } 
-
+            //copied from files - opens the clicked image in editor pane
             function loadImg(name, obj){
                 let b64 = obj.URL
                 localStorage.setItem("name", name)
