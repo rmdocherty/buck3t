@@ -48,9 +48,11 @@
         -->
 
         <div id="imgDiv" class="Images" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
+            <div></div>
         </div>
         
-        <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: none;">
+        <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
+            <div></div>
         </div>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
@@ -71,24 +73,27 @@
             var msnryTemp = new Masonry( tempGrid, {
                 itemSelector: '.grid-item',
                 percentPosition: true,
-                columnWidth: 200
+                columnWidth: 60
                 })
             var msnryImg = new Masonry( imgGrid, {
                 itemSelector: '.grid-item',
                 percentPosition: true,
-                columnWidth: 200
+                columnWidth: 60
                 })
             
-            
-            imagesLoaded( tempGrid ).on( 'progress', function() {
+            /*
+            imagesLoaded( tempGrid, function(instance) {
                 // layout Masonry after each image loads
+                console.log("All template images loaded")
                 msnryTemp.layout()
-            });
+            }); */
             
+
+            /*
             imagesLoaded( imgGrid ).on( 'progress', function() {
-                // layout Masonry after each image loads
+                 // layout Masonry after each image loads
                 msnryImg.layout();
-            });
+            }); */
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -136,6 +141,22 @@
                 //makeGrid(type)
             }
 
+
+            function addToMasonry(elem, type) {
+                console.log(type, " of image has been loaded")
+                if (type === "Image"){
+                    console.log("adding to images")
+                    msnryImg.appended(elem)
+                    msnryImg.layout()
+                } else {
+                    console.log("adding to templates")
+                    msnryTemp.appended(elem)
+                    msnryTemp.layout()
+                    console.log("laying out msrny")
+                }
+
+            }
+
             //dynamically create thumbails that contain img, imgname, a post button
             function createImg(obj, name){
                 let base64 = obj.URL
@@ -157,19 +178,12 @@
                 /*img.width = "250"
                 img.height = "250" */
                 newDiv.classList.add("grid-item")
+                img.onload = function(){addToMasonry(newDiv, type)}
                 img.onclick = function(){loadImg(name, obj)}
 
                 newDiv.appendChild(img)
                 parentList.appendChild(newDiv)
 
-                
-                if (type === "Image"){
-                    msnryImg.appended(newDiv)
-                    msnryImg.layout()
-                } else {
-                    msnryTemp.appended(newDiv)
-                    msnryTemp.layout()
-                }
 
             }
 
