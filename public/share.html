@@ -19,22 +19,19 @@
     <body>
         <div>
             <div id="topNav">
-                <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.5%; padding-bottom: 0.5%;"> <!-- top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;-->
+                <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.5%; padding-bottom: 0.5%; z-index: 7; position: fixed;"> <!-- top:0; left:0; position: absolute; padding-top: 0.7%; padding-bottom: 0.7%;-->
                     <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
                     <span style="font-size: 1.8em;">Bucket</span>
-                    <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
+                    <button class="menu" style="float:right"><a href="share.html"><img src="icons/cloud.svg"></img></a></button>
                     <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
                     <button class="menu" style="float:right"> <a href="login.html"><img src="icons/account.svg"></img></a></button>
-                    <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
+                    <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
                 </div>
             </div>
 
-            <div id="blankDiv" style="pointer-events: none;">
-                
-            </div>
-
-            <div class="toggle" style="padding-top: 5%;">
+            <div style="width: 100%; padding-top: 5%; margin: auto; display: flex; justify-content: center; align-items: center;">
                 <button class="toggle" onclick="setImgChoice('Image')" >Images</button>
+                <p> </p>
                 <button class="toggle" onclick="setImgChoice('Template')">Templates</button>
             </div>
 
@@ -76,13 +73,6 @@
             const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
             const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
             
-
-            window.onload = function() {
-                let topNavHeight = document.getElementById("topNav").offsetHeight //make new blank directly below topbar and give it its height
-                let blankDiv = document.getElementById("blankDiv")
-                //console.log(topNavHeight)
-                blankDiv.style.height = topNavHeight
-            }
             
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {

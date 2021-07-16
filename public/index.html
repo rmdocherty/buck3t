@@ -55,6 +55,9 @@ body {
     <div onclick="saveImage()" class="menubutton">
         <img src="icons/floppy.svg">
     </div>
+    <div onclick="showHelp()" class="menubutton">
+        <img src="icons/information-outline.svg">
+    </div>
     
 </div>
 
@@ -202,7 +205,8 @@ body {
         <button class="menu" style="float:right"><a href="share.html"><img src="icons/cloud.svg"></img></a></button>
         <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
         <button class="menu" style="float:right"><a href="login.html"><img src="icons/account.svg"></img></a></button>
-        <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>
+        <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
+        <!-- <button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button> -->
     </div>
     
 </div>
@@ -211,7 +215,7 @@ body {
     <span style="font-size: 1.8em; opacity: 0; pointer-events: none; padding-top: 0.5%; padding-bottom: 0.5%;">Bucket</span>
 </div>
 <img hidden id = "turtle" width: 100% height: 100%  crossorigin="Anonymous">
-<div id = "container" style="height:100%; width:100%;  padding-top: 0%;"> <!--Alignment of canvas isn't working at top-->
+<div id = "container" style="height:100%; width:100%;  padding-top: 5%;"> <!--Alignment of canvas isn't working at top-->
     <canvas id="myCanvas"></canvas>
 </div> 
 

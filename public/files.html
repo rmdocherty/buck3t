@@ -18,12 +18,14 @@
     <!-- This only works when deployed lol-->
     <body>
         <div id="topNav">
-            <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.5%; padding-bottom: 0.5%;">
+            <div style="float:left; width:100%; background-color:#ededed; top:0; left:0; position: absolute; padding-top: 0.5%; padding-bottom: 0.5%; z-index: 7; position: fixed;">
                 <button class="menu"  style="opacity: 0;"><img src="icons/menu.svg"></button>
                 <span style="font-size: 1.8em;">Bucket</span>
+                
                 <button class="menu" style="float:right"><a href="share.html"><img src="icons/cloud.svg"></img></a></button>
-                <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
+                <button class="menu" style="float:right"><a href="files.html"><img src="icons/folder.svg"></img></a></button>
                 <button class="menu" style="float:right"><a href="login.html"><img src="icons/account.svg"></img></a></button>
+                <button class="menu" style="float:right"><a href="index.html"><img src="icons/brush.svg"></img></a></button>
                 <!--<button onclick="showHelp()" class="menu" style="float:right"><img src="icons/information-outline.svg"></button>-->
             </div>
         </div>
@@ -33,7 +35,7 @@
         </div>
 
         <!-- <div id="thumbnailParent" width = 90% style="padding-top: 5%;"></div> -->
-        <table id="parentTable" width = 90% style="padding-top: 0%; padding-left: 0; padding-right: 0;"></table>
+        <table id="parentTable" width = 90% style="padding-top: 5%; padding-left: 0; padding-right: 0;"></table>
 
         <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
         <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
