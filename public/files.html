@@ -93,8 +93,14 @@
                      "public": "true"}) //update user copy to avoid double posting
                     let pB = document.getElementById("postButton") //get rid of button , replace with "posted"
                     pB.remove()
+                    //deleteImg(img_name)
                     //createTxtField(thumbTextDiv, "Posted!")
                 }
+            }
+
+            function copyImg(img_name, obj) {
+                firebase.database().ref(uid+'/'+img_name + "copy").set({"URL": obj.URL, "type": obj.type,
+                     "public": "false"}) 
             }
 
             function deleteImg(img_name){
@@ -136,6 +142,12 @@
                 } else {
                     createTxtField(thumbTextDiv, "Posted!")
                 }
+
+                const cButton = document.createElement("button")
+                const cText = document.createTextNode("Copy")
+                cButton.appendChild(cText)
+                cButton.onclick = function(){copyImg(name, obj)}
+                thumbTextDiv.appendChild(cButton)
 
                 const delButton = document.createElement("button")
                 const dText = document.createTextNode("Delete")

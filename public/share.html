@@ -29,17 +29,17 @@
                 </div>
             </div>
 
-            <div style="width: 100%; padding-top: 5%; margin: auto; display: flex; justify-content: center; align-items: center;">
+            <div style="width: 100%; padding-top: 6.5%; margin: auto; display: flex; justify-content: center; align-items: center;">
                 <button class="toggle" onclick="setImgChoice('Image')" >Images</button>
                 <p> </p>
                 <button class="toggle" onclick="setImgChoice('Template')">Templates</button>
             </div>
 
-            <div id="imgDiv" class="Images" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
+            <div id="imgDiv" class="Images" width=100% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block;">
                 <div></div>
             </div>
             
-            <div id="tempDiv" class="Templates" width=90% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block; opacity: 0">
+            <div id="tempDiv" class="Templates" width=100% height=90% style="padding-top: 6.5%; padding-left: 0; padding-right: 0; display: block; opacity: 0">
                 <div></div>
             </div>
         </div>
@@ -180,7 +180,7 @@
 
             //grab the images 
             function getFiles(type){
-                const public = firebase.database().ref("public/" + type).limitToFirst(30);
+                const public = firebase.database().ref("public/" + type).limitToFirst(20);
                 public.get().then((snapshot) => {
                     if (snapshot.exists()) {
                         //console.log(snapshot.val());

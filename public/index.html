@@ -184,7 +184,8 @@ body {
             <p>Creations can be saved using the floppy disk icon in the editor page. A newly converted image is called a Template and when saved will appear as such in the files.
                 If you make any edits to the Template (i.e using the fill/picker/brush tools) it will be classified and saved as an Image. You can access your files using the folder
                 icon at the top of the page. From there creations can be posted or deleted to the share page. The share page is accessed with the cloud icon on the top 
-                and lets you see other people's Images or Templates. If you click on one of the images the editor will load with the image ready to be edited and shared again!
+                and lets you see other people's Images or Templates. If you click on one of the images the editor will load with the image ready to be edited and shared again! 
+                <b>The share page is a bit fraught at the minute so just wait or refresh or switch between images and templates until it appears.</b>
             </p>
         </div>
 
@@ -273,7 +274,8 @@ body {
             img.src = b64
             name = localStorage.getItem("name")
             console.log("Image " + name + " has been loaded!")
-            localStorage.clear()
+            localStorage.removeItem("imageToLoad")
+            localStorage.removeItem("name")
             //localStorage.clear() - add this if annoying bugs happen with the name & save/load
         }
     }
