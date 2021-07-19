@@ -1,6 +1,6 @@
 # Bucket
 
-Check it out at <https://bucket-12.web.app/>
+Check it out at <https://bucket-12.web.app>
 
 ![Conversion demo](gifs/bucket1.gif)
 
