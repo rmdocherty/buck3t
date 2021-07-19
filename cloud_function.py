@@ -103,11 +103,6 @@ def respond(image):
     imgByteArr = io.BytesIO()
     inverted.save(imgByteArr, "bmp")
     imgByteData = imgByteArr.getvalue()
-    #byteData = bytearray(imageFile)
     b64return = base64.b64encode(imgByteData)
-    #json = jsonify(response=b64return)
-    
-    #r.headers.set('Access-Control-Allow-Origin', '*')
-    #json.headers.set('Access-Control-Allow-Origin', '*')
-    #json.headers.set('Access-Control-Allow-Methods', 'GET, POST')
+
     return b64return
